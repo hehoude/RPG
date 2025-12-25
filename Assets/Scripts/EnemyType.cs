@@ -11,9 +11,10 @@ public class EnemyType
     public int special1;//特殊意图1
     public int special2;//特殊意图2
     public int special3;//特殊意图3
+    public int start;//指定初始意图
     public EnemyType(int _id, string _name, int _maxhp, int _hp, 
         int _attack, int _defense, int _build, int _negative, int _special1,
-        int _special2, int _special3)
+        int _special2, int _special3, int   _start)
     {
         this.id = _id;
         this.name = _name;
@@ -26,5 +27,6 @@ public class EnemyType
         this.special1 = _special1;
         this.special2 = _special2;
         this.special3 = _special3;
+        this.start = _start;
     }
 }

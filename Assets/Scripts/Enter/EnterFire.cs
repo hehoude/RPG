@@ -47,7 +47,7 @@ public class EnterFire : MonoBehaviour
             SceneChanger.Instance.GetFire();
 
             //告知全局数据当前交互对象的ID
-            Global_PlayerData.CurrentId = 1;
+            Global_PlayerData.Instance.CurrentId = 1;
 
             // 可选：重置标记（防止重复触发）
             isPlayerInTrigger = false;

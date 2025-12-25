@@ -47,7 +47,7 @@ public class EnterBox : MonoBehaviour
             SceneChanger.Instance.GetBox();
 
             //告知全局数据当前交互对象的ID
-            Global_PlayerData.CurrentId = 3;
+            Global_PlayerData.Instance.CurrentId = 3;
 
             // 可选：重置标记（防止重复触发）
             isPlayerInTrigger = false;

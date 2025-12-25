@@ -18,7 +18,7 @@ public class StartGameCanvas : MonoBehaviour
     {
         //执行数据重置函数（不必调用PlayerData）
         ResetPlayerData();
-        Global_PlayerData.newGame= true;
+        Global_PlayerData.Instance.newGame = true;
         SceneManager.LoadScene(1);//打开序号为1的场景
     }
     public void QuitGameButton()
@@ -27,7 +27,7 @@ public class StartGameCanvas : MonoBehaviour
     }
     public void LoadGameButton()
     {
-        Global_PlayerData.newGame = false;
+        Global_PlayerData.Instance.newGame = false;
         SceneManager.LoadScene(1);
     }
 

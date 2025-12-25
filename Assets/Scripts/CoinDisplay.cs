@@ -7,7 +7,13 @@ public class CoinDisplay : MonoBehaviour
 {
     public Text Text;
     private int coins;
-    // Start is called before the first frame update
+    private Global_PlayerData Global_PlayerData;
+
+    void Awake()
+    {
+        Global_PlayerData = Global_PlayerData.Instance;
+    }
+
     void Start()
     {
         

@@ -47,7 +47,7 @@ public class EnterDelete : MonoBehaviour
             SceneChanger.Instance.GetDelete();
 
             //告知全局数据当前交互对象的ID
-            Global_PlayerData.CurrentId = 2;
+            Global_PlayerData.Instance.CurrentId = 2;
 
             // 可选：重置标记（防止重复触发）
             isPlayerInTrigger = false;

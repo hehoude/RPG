@@ -23,6 +23,18 @@ public class SceneChanger : MonoSingleton<SceneChanger>
             battleManager.UnloadSingleton();
             Debug.Log("战斗管理器单例已卸载");
         }
+        var boxManager = BoxManager.FindInstance();
+        if (boxManager != null)
+        {
+            boxManager.UnloadSingleton();
+            Debug.Log("宝箱管理器单例已卸载");
+        }
+        var shopManager = ShopManager.FindInstance();
+        if (shopManager != null)
+        {
+            shopManager.UnloadSingleton();
+            Debug.Log("商店管理器单例已卸载");
+        }
 
     }
     public void GetBattle()
@@ -69,6 +81,7 @@ public class SceneChanger : MonoSingleton<SceneChanger>
         MapManager.Instance?.UnloadSingleton();//卸载地图管理器单例
         PlayerData.Instance?.UnloadSingleton();//卸载数据管理器单例
         //CardStore没有Start方法，因此无需卸载
+        //Debug.Log("成功退出");
     }
 
     // 通用叠加加载方法（核心逻辑）

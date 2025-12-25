@@ -38,11 +38,16 @@ public class EnterShop : MonoBehaviour
         // 条件：玩家在触发器内 + 按下F键
         if (isPlayerInTrigger && Input.GetKeyDown(KeyCode.F))
         {
+            if (MapManager.Instance != null)
+            {
+                //传递地图管理器（单例）当前交互的对象
+                MapManager.Instance.CurrentObject = this.gameObject;
+            }
             //找到场景切换器，切换至删牌场景
             SceneChanger.Instance.GetShop();
 
             //告知全局数据当前交互对象的ID
-            Global_PlayerData.CurrentId = 4;
+            Global_PlayerData.Instance.CurrentId = 4;
 
             // 可选：重置标记（防止重复触发）
             isPlayerInTrigger = false;

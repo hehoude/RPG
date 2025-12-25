@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8870836027135579745
+--- !u!1 &2795366423497979295
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,43 +8,46 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3344556724763012889}
-  - component: {fileID: 5893693426969758452}
+  - component: {fileID: 1360122318784504061}
+  - component: {fileID: 1231835049805356674}
   m_Layer: 0
-  m_Name: StateManager
+  m_Name: DeckManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3344556724763012889
+--- !u!4 &1360122318784504061
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8870836027135579745}
+  m_GameObject: {fileID: 2795366423497979295}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 916.7193, y: 510.67874, z: -4.8363633}
+  m_LocalPosition: {x: 827.9745, y: 441.5511, z: 3.8101597}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5893693426969758452
+--- !u!114 &1231835049805356674
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8870836027135579745}
+  m_GameObject: {fileID: 2795366423497979295}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64236605dcf5b524a9658f602b1d05e8, type: 3}
+  m_Script: {fileID: 11500000, guid: bade9ff6fa579a844ae36a02c31b7629, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Strength_State_Perfab: {fileID: 7215369755768263699, guid: a141ef09948703547a8fe88a0875e856, type: 3}
-  Fire_State_Perfab: {fileID: 7215369755768263699, guid: 8f05410877a251c4db9a3ba69f39ecf6, type: 3}
-  Toxin_State_Perfab: {fileID: 7215369755768263699, guid: 5463c95ec5ae0b54d8d2b7665a740373, type: 3}
-  Ele_State_Perfab: {fileID: 7215369755768263699, guid: c3f2c39f9aed950449a8e5865e6894fa, type: 3}
+  libraryPanel: {fileID: 0}
+  cardPrefab: {fileID: 8987057101913134065, guid: 496eb9dc87e1d87499dfea1d720ff87b, type: 3}
+  cardScrollRect: {fileID: 0}
+  Button1: {fileID: 0}
+  Button2: {fileID: 0}
+  Button3: {fileID: 0}
+  Button4: {fileID: 0}

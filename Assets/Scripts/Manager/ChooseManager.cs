@@ -24,11 +24,13 @@ public class ChooseManager : MonoBehaviour
     //public GameObject DataManager;//从数据管理器获取玩家数据
     private PlayerData PlayerData;
     private CardStore CardStore;
+    private Global_PlayerData Global_PlayerData;
 
     void Awake()
     {
         PlayerData = PlayerData.Instance;
         CardStore = CardStore.Instance;
+        Global_PlayerData = Global_PlayerData.Instance;
     }
     void Start()
     {

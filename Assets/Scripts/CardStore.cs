@@ -69,8 +69,9 @@ public class CardStore : MonoSingleton<CardStore>
                 int toxin = int.Parse(rowArray[12]);
                 int electricity = int.Parse(rowArray[13]);
                 int other = int.Parse(rowArray[14]);
+                int front = int.Parse(rowArray[15]);
                 Card card = new Card(id, type, ra, name, spend, target, attack, 
-                    defense, keep, consume, element, fire, toxin, electricity, other);
+                    defense, keep, consume, element, fire, toxin, electricity, other, front);
                 cardList.Add(card);//将类加入容器中
                 //Debug.Log("读取到卡牌：" + card.cardName);
 
@@ -114,7 +115,7 @@ public class CardStore : MonoSingleton<CardStore>
         //构建复制品
         Card cardCopy = new Card(ca.id, ca.type, ca.rarity, ca.cardName, ca.spend,
         ca.target, ca.attack, ca.defense, ca.keep, ca.consume, ca.element, ca.fire, 
-        ca.toxin, ca.electricity, ca.other);
+        ca.toxin, ca.electricity, ca.other, ca.front);
 
         return cardCopy;
     }

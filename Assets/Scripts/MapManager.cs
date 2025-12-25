@@ -49,6 +49,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
     [Header("其它管理器")]
     //public GameObject DataManager;//从数据管理器获取玩家数据
     private PlayerData PlayerData;
+    private Global_PlayerData Global_PlayerData;
 
     public GameObject Player;//玩家对象
 
@@ -67,6 +68,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
 
     protected override void Awake()
     {
+        Global_PlayerData = Global_PlayerData.Instance;
         base.Awake();
         // 初始化数据结构
         roomCenterPositions = new Dictionary<Vector2Int, Vector2Int>();

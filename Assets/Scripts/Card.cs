@@ -17,9 +17,10 @@ public class Card
     public int electricity;//电
     public int other;//1抽到效果,2弃置效果
     public int imprint;//印记
+    public int front;//前置效果
     public Card(int _id, int _type, int _rarity, string _cardName, int _spend, 
         int _target, int _attack, int _defense, int _keep, int _consume, 
-        int _element, int _fire, int _toxin, int _electricity, int _other)
+        int _element, int _fire, int _toxin, int _electricity, int _other, int _front)
     {
         this.id = _id;
         this.type = _type;
@@ -38,6 +39,7 @@ public class Card
         this.electricity = _electricity;
         this.other = _other;
         this.imprint = 0;
+        this.front = _front;
     }
 }
 /*

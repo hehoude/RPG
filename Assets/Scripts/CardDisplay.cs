@@ -22,12 +22,18 @@ public class CardDisplay : MonoBehaviour
 
     void Start()
     {
-        Effect();
-        ShowCard();
+        RefreshCard();
     }
     void Update()
     {
         
+    }
+
+    //刷新卡牌内容
+    public void RefreshCard()
+    {
+        Effect();
+        ShowCard();
     }
 
     //将类中的卡片信息呈现到UI上
@@ -184,10 +190,36 @@ public class CardDisplay : MonoBehaviour
                 effect = "选择一张手牌消耗\n抽一张牌\n消耗";
                 break;
             case 22://穿透打击
-                effect = "造成" + card.attack + "点伤害，如果未能击破目标护甲，再造成5点伤害";
+                effect = "造成" + card.attack + "点伤害，如果目标有护甲，伤害+5";
                 break;
             case 1022:
-                effect = "造成" + card.attack + "点伤害，如果未能击破目标护甲，再造成7点伤害";
+                effect = "造成" + card.attack + "点伤害，如果目标有护甲，伤害+7";
+                break;
+            case 23://旋风锤
+                effect = "造成" + card.attack + "点伤害，自身力量-1";
+                break;
+            case 1023:
+                effect = "造成" + card.attack + "点伤害，自身力量-1";
+                break;
+            case 24://火中取栗
+                effect = "抽两张牌，获得3层燃烧\n虚无";
+                break;
+            case 1024:
+                effect = "抽三张牌，获得3层燃烧\n虚无";
+                break;
+            case 25://毒液
+            case 1025:
+                effect = "施加" + card.toxin + "点中毒";
+                break;
+            case 26://刺骨寒毒
+                effect = "如果目标中毒，减少目标2点力量\n消耗";
+                break;
+            case 1026:
+                effect = "如果目标中毒，减少目标3点力量\n消耗";
+                break;
+            case 27://脉冲拳
+            case 1027:
+                effect = "造成" + card.attack + "点伤害\n施加" + card.electricity + "点雷电\n消耗";
                 break;
         }
     }

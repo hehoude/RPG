@@ -14,7 +14,9 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
     public int maxhp;//最大生命值
     public bool life = true;//生存状况
     public int armor = 0;//护甲
+    [Header("主要状态")]
     public int strength = 0;//力量
+    public int firm = 0;//坚固
     public int fire = 0;//燃烧层数
     public int toxin = 0;//毒素层数
     public int electricity = 0;//雷电层数
@@ -36,12 +38,10 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
     public Text armorText;
     public GameObject Image;//图片对象
     public GameObject Target;//攻击目标
+    [Header("状态")]
     public Transform State;//状态栏
-    //图标储存处（方便未来删除）
-    private GameObject Strength_State;//力量状态
-    private GameObject Fire_State;//燃烧状态
-    private GameObject Toxin_State;//中毒状态
-    private GameObject Ele_State;//雷电状态
+    private Dictionary<int, GameObject> State_Objects;//存储所有状态指示器的引用
+    public GameObject State_Prefab;//状态图标预制体
     [Header("特效")]
     public Transform EffectPlace; //特效区域
     public GameObject BoomAnim_Prefab;//燃烧特效
@@ -50,8 +50,12 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
     [Header("其它")]
     public bool choose = false;//是否可被选择
     public bool Acing = false;//是否正在行动
-    public GameObject StateManager;//状态管理器
     public EnemyType enemyType;
+
+    void Awake() // 用 Awake() 初始化，比 OnEnable() 早，避免时机问题
+    {
+        State_Objects = new Dictionary<int, GameObject>();//初始化字典
+    }
 
     void Start()
     {
@@ -97,11 +101,11 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
     public void LoadImage(int _id)
     {
         string imageEnemy = Application.dataPath + "/Image/Enemy/"+_id.ToString()+".png";
-        ChooseImage(Image, imageEnemy);
+        ChangeImage(Image, imageEnemy);
     }
 
     //替换图片
-    public void ChooseImage(GameObject blockImage, string imagePath)
+    public void ChangeImage(GameObject blockImage, string imagePath)
     {
         Image imageComponent = blockImage.GetComponent<Image>();
         if (imageComponent == null)
@@ -160,7 +164,16 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
     //更新意图
     public void RefreshIntent()
     {
-        runningIntent = RandomIntent();//随机抽取一个意图作为现有意图
+        //查看是否有指定意图
+        if (enemyType.start == 0)
+        {
+            runningIntent = RandomIntent();//随机抽取一个意图作为现有意图
+        }
+        else
+        {
+            runningIntent = enemyType.start;//变为指定意图
+            enemyType.start = 0;
+        }
         string _intent;
         switch (runningIntent)
         {
@@ -245,7 +258,7 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
     //起甲函数
     public void GetArmor(int _armor)
     {
-        armor += _armor;
+        armor += (_armor + firm);
         Refresh();
     }
 
@@ -287,28 +300,34 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
         FreshState(3);
     }
 
+    //修改坚固函数
+    public void GetFirm(int _firm)
+    {
+        firm += _firm;
+        FreshState(4);
+    }
+
     //刷新状态栏（出于性能考虑，每次调用只刷新一种状态）
     public void FreshState(int _state)
     {
-        int state_Count = strength;
-        ref GameObject state_Object = ref Strength_State;
+        int state_Count = 0;
+        GameObject state_Object = null;
         switch (_state)
         {
             case 0://力量
                 state_Count = strength;
-                state_Object = ref Strength_State;
                 break;
             case 1://燃烧
                 state_Count = fire;
-                state_Object = ref Fire_State;
                 break;
             case 2://中毒
                 state_Count = toxin;
-                state_Object = ref Toxin_State;
                 break;
             case 3://雷电
                 state_Count = electricity;
-                state_Object = ref Ele_State;
+                break;
+            case 4://坚固
+                state_Count = firm;
                 break;
             default://传入未知变量则用默认值
                 //state_Count = strength;
@@ -318,17 +337,45 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
         }
         if (state_Count != 0)//检测数值
         {
-            if (state_Object == null)//检测是否有图标
+            // 尝试从字典取值
+            bool hasStateInDict = State_Objects.TryGetValue(_state, out state_Object);
+
+            // 校验对象是否有效（未销毁/非null）
+            bool isStateObjValid = state_Object != null && state_Object;
+
+            // 无有效对象 → 创建新图标
+            if (!hasStateInDict || !isStateObjValid)
             {
                 //调用状态管理器创建图标
-                state_Object = StateManager.GetComponent<StateManager>().AddState(_state, State.transform);
+                state_Object = AddState(_state, State.transform);
+                //放入字典
+                State_Objects[_state] = state_Object;
             }
-            state_Object.GetComponent<State_FreshText>().FreshCount(state_Count);//更新数值文本
+            state_Object.GetComponent<StateDisplay>().FreshCount(state_Count);//更新数值文本
         }
-        else
+        else if (state_Count == 0)
         {
-            Destroy(state_Object);
+            if (!State_Objects.TryGetValue(_state, out state_Object))
+            {
+                Debug.LogWarning($"状态栏{_state}不存在字典中！");
+                return;
+            }
+            if (state_Object != null) // 先判断对象是否有效（避免重复销毁）
+            {
+                Destroy(state_Object);
+            }
+            // 清空字典中该状态的引用
+            State_Objects[_state] = null;
         }
+    }
+
+    //添加状态主要图标，接收状态id与添加位置，返回图标对象
+    public GameObject AddState(int _state, Transform _stateLab)
+    {
+        GameObject NewState = Instantiate(State_Prefab, _stateLab);//添加状态图标
+        StateDisplay stateDisplay = NewState.GetComponent<StateDisplay>();//获取脚本
+        stateDisplay.id = _state;//赋予状态id
+        return NewState;
     }
 
     //回合开始（这个由战斗管理器触发，并传入玩家对象）
@@ -463,10 +510,10 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
         switch (id)
         {
             case 2://小鸡战士
-                int hurt = attack + strength - 5;
+                int hurt = attack + strength - 4;
                 if (hurt < 0) { hurt = 0; }
                 _Target.TakeDamage(hurt);
-                GetArmor(10);
+                GetArmor(8);
                 special1 = -1;//隔1回合才能使用
                 break;
             default:
@@ -502,9 +549,9 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
         switch (_id)
         {
             case 2://小鸡战士
-                int hurt = attack + strength - 5;
+                int hurt = attack + strength - 4;
                 if (hurt < 0) { hurt = 0; }
-                _Text = "攻击：" + (hurt) + "\n防御：10";
+                _Text = "攻击：" + (hurt) + "\n防御：8";
                 break;
             default:
 

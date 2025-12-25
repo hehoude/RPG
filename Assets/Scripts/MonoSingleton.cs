@@ -67,7 +67,7 @@ public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
             transform.SetParent(null); // 取消DontDestroyOnLoad关联
             Destroy(gameObject);
             _instance = null;
-            Debug.Log($"单例 {typeof(T).Name} 已卸载");
+            //Debug.Log($"单例 {typeof(T).Name} 已卸载");
         }
     }
 }

@@ -126,14 +126,61 @@ public class CardEffect : MonoBehaviour
             case 22://穿透打击
                 if (enemyState.armor > 0)
                 {
-                    enemyState.TakeDamage(5);
+                    attackCard.imprint += 5;
                 }
                 break;
             case 1022:
                 if (enemyState.armor > 0)
                 {
-                    enemyState.TakeDamage(7);
+                    attackCard.imprint += 7;
                 }
+                break;
+            case 23://旋风锤
+            case 1023:
+                playerState.GetStrength(-1);
+                break;
+            case 24://火中取栗
+                playerState.GetFire(3);
+                DrawCard(2);
+                break;
+            case 1024:
+                playerState.GetFire(3);
+                DrawCard(3);
+                break;
+            case 25://毒液
+            case 1025:
+                break;
+            case 26://刺骨寒毒
+                if (enemyState.toxin > 0)
+                {
+                    enemyState.GetStrength(-2);
+                }
+                break;
+            case 1026:
+                if (enemyState.toxin > 0)
+                {
+                    enemyState.GetStrength(-3);
+                }
+                break;
+            case 27://脉冲拳
+            case 1027:
+                break;
+        }
+    }
+
+    public void FrontEffect(Card attackCard, EnemyState enemyState, PlayerState playerState)
+    {
+        //发起剩余效果
+        int effect_id = attackCard.id;
+        if (attackCard.upgrade)
+        {
+            effect_id += 1000;//已升级的卡延后1000位
+        }
+        switch (effect_id)
+        {
+            case 22://穿透打击
+            case 1022:
+                attackCard.imprint = 0;//清除临时加成
                 break;
         }
     }
@@ -161,10 +208,10 @@ public class CardEffect : MonoBehaviour
         BattleManager.Anim_Attack();
     }
 
-    //回合结束
+    //这张卡结算完毕后回合结束
     public void TurnEnd()
     {
-        BattleManager.TurnEnd();
+        BattleManager.Wait_TurnEnd = true;
     }
 
     //消耗指定卡牌
@@ -176,6 +223,20 @@ public class CardEffect : MonoBehaviour
         BattleManager.HandCount -= 1;//别忘了修改手牌数量
     }
 
+    //主动弃置卡牌
+    public void ThrowCard(GameObject targetCard, PlayerState playerState)
+    {
+        Card _cardObj = targetCard.GetComponent<CardDisplay>().card;//获取卡牌脚本
+        //检测是否有主动弃置效果
+        if (_cardObj.imprint == 2)
+        {
+            //执行弃置效果
+            OverEffect(_cardObj, playerState);
+        }
+        BattleManager.ConsumeList.Add(_cardObj);//放入弃置牌堆
+        Destroy(targetCard.gameObject);//销毁对象
+        BattleManager.HandCount -= 1;//别忘了修改手牌数量
+    }
 
 
 }

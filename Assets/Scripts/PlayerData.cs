@@ -11,6 +11,7 @@ public class PlayerData : MonoSingleton<PlayerData>
     public List<Card> PlayerCardList = new List<Card>();//玩家卡组
     //public TextAsset playerData;//加载玩家数据
     private CardStore CardStore;//卡牌商店脚本
+    private Global_PlayerData Global_PlayerData;
     //public int coins;//持有的金币数
     //public int maxhp;//玩家最大生命
     //public int hp;//玩家生命
@@ -26,11 +27,14 @@ public class PlayerData : MonoSingleton<PlayerData>
     {
         base.Awake();
         CardStore = CardStore.Instance;
+        Global_PlayerData = Global_PlayerData.Instance;
+        //核心数据加载提前（确保不被MapManager抢先加载）
+        CardStore.LoadCardData();//调用商店脚本加载所有卡牌数据
+        LoadPlayerData();//加载玩家数据
     }
     void Start()
     {
-        CardStore.LoadCardData();//调用商店脚本加载所有卡牌数据
-        LoadPlayerData();//加载玩家数据
+        
         // 触发事件，通知其他脚本“我已加载完成”
         //DataLoaded?.Invoke();
         //PlayerLoaded?.Invoke();
@@ -73,10 +77,12 @@ public class PlayerData : MonoSingleton<PlayerData>
             else if (rowArray[0] == "maxhp")//血量上限
             {
                 Global_PlayerData.maxhp = int.Parse(rowArray[1]);
+                Debug.Log("玩家血量上限设置为："+ Global_PlayerData.maxhp);
             }
             else if (rowArray[0] == "hp")//血量
             {
                 Global_PlayerData.hp = int.Parse(rowArray[1]);
+                Debug.Log("玩家血量设置为：" + Global_PlayerData.hp);
             }
             else if (rowArray[0] == "id")//玩家ID
             {
@@ -190,6 +196,7 @@ public class PlayerData : MonoSingleton<PlayerData>
         List<string> datas = new List<string>();
         //保存血量上限
         datas.Add("maxhp," + Global_PlayerData.maxhp.ToString());
+        Debug.Log("玩家血量上限保存为：" + Global_PlayerData.maxhp);
         //保存血量
         datas.Add("hp," + Global_PlayerData.hp.ToString());
         //保存金币
@@ -324,7 +331,20 @@ public class PlayerData : MonoSingleton<PlayerData>
             case 22://穿透打击
                 _card.attack += 2;
                 break;
-
+            case 23://旋风锤
+                _card.attack += 5;
+                break;
+            case 24://火中取栗
+                break;
+            case 25://毒液
+                _card.toxin += 2;
+                break;
+            case 26://刺骨寒毒
+                break;
+            case 27://脉冲拳
+                _card.attack += 2;
+                _card.electricity += 2;
+                break;
         }
         return _card;
     }

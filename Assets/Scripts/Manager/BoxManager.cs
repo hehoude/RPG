@@ -25,11 +25,14 @@ public class BoxManager : MonoSingleton<BoxManager>
     private int Card2_id;
     private int Card3_id;
 
+    private Global_PlayerData Global_PlayerData;
+
     protected override void Awake()
     {
         base.Awake();
         PlayerData = PlayerData.Instance;
         CardStore = CardStore.Instance;
+        Global_PlayerData = Global_PlayerData.Instance;
         this.White_Cards = CardStore.White_Cards;
         this.Blue_Cards = CardStore.Blue_Cards;
         this.Gold_Cards = CardStore.Gold_Cards;
@@ -42,16 +45,16 @@ public class BoxManager : MonoSingleton<BoxManager>
         Card2_id = RandomCard(GetWeightedRandom());
         Card3_id = RandomCard(GetWeightedRandom());
         //展示到槽内
-        CreateCard(Card1_id, CardBlock1, 1);
-        CreateCard(Card2_id, CardBlock2, 2);
-        CreateCard(Card3_id, CardBlock3, 3);
+        CreateCard(Card1_id, CardBlock1, 0);
+        CreateCard(Card2_id, CardBlock2, 1);
+        CreateCard(Card3_id, CardBlock3, 2);
     }
 
     //带权重的随机数（随机卡牌的稀有度）
     public int GetWeightedRandom()
     {
         // 1. 定义权重数组（顺序对应选项A、B、C）
-        int[] weights = { 6, 3, 1 };
+        int[] weights = { 9, 3, 1 };
         // 2. 计算总权重
         int totalWeight = 0;
         foreach (int w in weights) totalWeight += w;
@@ -68,12 +71,10 @@ public class BoxManager : MonoSingleton<BoxManager>
                 return i + 1; // 找到对应索引，最终返回1-3的值
             }
         }
-
-        // 兜底（理论上不会走到）
         return 0;
     }
 
-    //根据稀有度随机宝箱里的卡牌
+    //根据稀有度随机卡牌
     public int RandomCard(int level)
     {
         int n = 0;
@@ -113,20 +114,20 @@ public class BoxManager : MonoSingleton<BoxManager>
     public void Choose(int _c)
     {
         int _id = 0;
-        if (_c == 1)
+        if (_c == 0)
         {
             _id = Card1_id;
         }
-        else if (_c == 2)
+        else if (_c == 1)
         {
             _id = Card2_id;
         }
-        else if (_c == 3)
+        else if (_c == 2)
         {
             _id = Card3_id;
         }
         else { Debug.Log("卡牌选择错误"); }
-        //赋值卡牌
+        //复制卡牌
         Card cardObject = CardStore.CopyCard(_id);
         //加入玩家卡组
         PlayerData.PlayerCardList.Add(cardObject);

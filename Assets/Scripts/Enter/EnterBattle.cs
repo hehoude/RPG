@@ -33,7 +33,7 @@ public class EnterBattle : MonoBehaviour
             //找到场景切换器，切换至战斗场景
             SceneChanger.Instance.GetBattle();
             //告知全局数据当前交互对象的ID
-            Global_PlayerData.CurrentId = currentId;
+            Global_PlayerData.Instance.CurrentId = currentId;
             //摧毁自身（防止重复触发）
             Destroy(gameObject);
         }

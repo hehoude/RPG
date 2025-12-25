@@ -17,9 +17,11 @@ public class RoomDisplay : MonoBehaviour
     [Header("资源接口")]
     private GameObject Door;//门对象
     private GameObject[] Source;//资源
+    private Global_PlayerData Global_PlayerData;
 
     void Awake()
     {
+        Global_PlayerData = Global_PlayerData.Instance;
         //初始化资源表
         Source = new GameObject[9];
     }

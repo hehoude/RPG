@@ -734,7 +734,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u9000\u51FA"
+  m_Text: "\u9000\u51FA\u301020\u91D1\u5E01\u3011"
 --- !u!222 &1006849586
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1082,8 +1082,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 846, y: -472}
-  m_SizeDelta: {x: 200, y: 150}
+  m_AnchoredPosition: {x: 761.67773, y: -472}
+  m_SizeDelta: {x: 368.6445, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1754210809
 MonoBehaviour:

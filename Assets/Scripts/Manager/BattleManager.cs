@@ -40,6 +40,7 @@ public class BattleManager : MonoSingleton<BattleManager>
     public GameObject EnemyManager;//从敌人管理器获取敌人数据
     private EnemyData EnemyData;
     public GridLayoutGroup HandGridLayout;//手牌布局管理器
+    private Global_PlayerData Global_PlayerData;
     [Header("临时生成物")]
     private GameObject runningCard;//运行中的卡牌存这里
     public GameObject targetArrow;//存放目标箭头预制体
@@ -58,6 +59,7 @@ public class BattleManager : MonoSingleton<BattleManager>
     [Header("其它")]
     public CardEffect cardEffect;
     public List<GameObject> activeEnemies;//可用敌人容器（用于遍历与随机）
+    public bool Wait_TurnEnd = false;//即将结束回合
     // 自定义连携规则类（存储“目标组合”和“对应效果”）
     public class ComboRule
     {
@@ -86,6 +88,7 @@ public class BattleManager : MonoSingleton<BattleManager>
         base.Awake();
         PlayerData = PlayerData.Instance;
         CardStore = CardStore.Instance;
+        Global_PlayerData = Global_PlayerData.Instance;
         EnemyData = EnemyManager.GetComponent<EnemyData>();
         battleReader = BattleReader.GetComponent<BattleReader>();
         playerState = player.GetComponent<PlayerState>();
@@ -403,9 +406,11 @@ public class BattleManager : MonoSingleton<BattleManager>
             Card _cardObj = cardTransform.GetComponent<CardDisplay>().card;
 
             if (_cardObj.keep == 1)//如果卡牌是虚无
-            {ConsumeList.Add(_cardObj);}//放入消耗牌堆
+            { ConsumeList.Add(_cardObj); }//放入消耗牌堆
+            else if (_cardObj.keep == 2)//如果卡牌是保留
+            { continue; }
             else
-            {DisCardList.Add(_cardObj);}//放入弃牌堆
+            { DisCardList.Add(_cardObj); }//放入弃牌堆
 
             //销毁卡牌游戏对象
             Destroy(cardTransform.gameObject);//这里不会连带销毁card
@@ -663,6 +668,12 @@ public class BattleManager : MonoSingleton<BattleManager>
         EnemyState enemyState = _target.GetComponent<EnemyState>();//获取敌人状态类
         int str = playerState.strength;//获取玩家力量
 
+        //检测卡牌是否有前置效果
+        if (attackCard.front == 1)
+        {
+            cardEffect.FrontEffect(attackCard, enemyState, playerState);
+        }
+
         //向目标发起攻击
         if (attackCard.attack > 0)
         {
@@ -715,6 +726,17 @@ public class BattleManager : MonoSingleton<BattleManager>
         FreshCardCount();//更新显示层
         Destroy(_Card);//销毁卡牌对象
         execute = false;//卡牌执行完成
+
+        //公开发送出牌事件
+        Event.CallSendCard(attackCard.type);//0攻击牌、1技能牌、2能力牌
+
+        //判断由卡牌执行结束回合的命令是否开启
+        if (Wait_TurnEnd)
+        {
+            Wait_TurnEnd = false;
+            //TurnEnd();//结束回合，不知道为什么这里会让“结束回合”效果的牌复制一份，所以延迟
+            Invoke("TurnEnd", 0.3f);
+        }
     }
 
     //敌人行动执行
@@ -757,6 +779,8 @@ public class BattleManager : MonoSingleton<BattleManager>
             Debug.Log("所有敌人已被击败，胜利！");
             //向Global_PlayerData修改玩家血量
             Global_PlayerData.hp = playerState.hp;
+            //奖励金币战利品
+            Global_PlayerData.coins += 20;
             //保存数据
             PlayerData.SavePlayerData();
             

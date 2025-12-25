@@ -40,6 +40,13 @@ StartGameCanvas：打开其它场景
 
 X牌显示层在CardDisplay中有特殊处理
 
+敌人增加：
+1、EnemyList中加入敌人属性
+2、EnemyState中加入特殊意图代码
+3、增加等同代号的图片
+
+状态增加：
+1、在StateDisplay中添加相应介绍文本
 
 
 

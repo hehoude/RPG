@@ -285,57 +285,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 101802854}
   m_CullTransparentMesh: 1
---- !u!1 &186794518
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 186794520}
-  - component: {fileID: 186794519}
-  m_Layer: 0
-  m_Name: DeckManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &186794519
+--- !u!114 &186794519 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 1231835049805356674, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+  m_PrefabInstance: {fileID: 691122588076688670}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 186794518}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bade9ff6fa579a844ae36a02c31b7629, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  libraryPanel: {fileID: 1759430655}
-  cardPrefab: {fileID: 8987057101913134065, guid: 496eb9dc87e1d87499dfea1d720ff87b, type: 3}
-  cardScrollRect: {fileID: 903342625}
-  Button1: {fileID: 1049189791}
-  Button2: {fileID: 281757768}
-  Button3: {fileID: 2048639430}
-  Button4: {fileID: 976990586}
---- !u!4 &186794520
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 186794518}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 827.9745, y: 441.5511, z: 3.8101597}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &267432231
 GameObject:
   m_ObjectHideFlags: 0
@@ -2457,6 +2417,87 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: 0, y: 0, z: 0, w: 0}
   m_Softness: {x: 0, y: 0}
+--- !u!1001 &691122588076688670
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1231835049805356674, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: Button1
+      value: 
+      objectReference: {fileID: 1049189791}
+    - target: {fileID: 1231835049805356674, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: Button2
+      value: 
+      objectReference: {fileID: 281757768}
+    - target: {fileID: 1231835049805356674, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: Button3
+      value: 
+      objectReference: {fileID: 2048639430}
+    - target: {fileID: 1231835049805356674, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: Button4
+      value: 
+      objectReference: {fileID: 976990586}
+    - target: {fileID: 1231835049805356674, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: libraryPanel
+      value: 
+      objectReference: {fileID: 1759430655}
+    - target: {fileID: 1231835049805356674, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: cardScrollRect
+      value: 
+      objectReference: {fileID: 903342625}
+    - target: {fileID: 1360122318784504061, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 827.9745
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360122318784504061, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 441.5511
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360122318784504061, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.8101597
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360122318784504061, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360122318784504061, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360122318784504061, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360122318784504061, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360122318784504061, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360122318784504061, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360122318784504061, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2795366423497979295, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
+      propertyPath: m_Name
+      value: DeckManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: aa82623030f7d684d9e92ca6a1239778, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2465,4 +2506,4 @@ SceneRoots:
   - {fileID: 11211357}
   - {fileID: 982498938}
   - {fileID: 1785379218}
-  - {fileID: 186794520}
+  - {fileID: 691122588076688670}

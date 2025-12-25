@@ -9,7 +9,6 @@ public class DeckManager2 : MonoBehaviour
     public GameObject Place;//卡牌展示区
     public GameObject cardPrefab;//卡组卡
 
-    public GameObject BattleManager;
     private BattleManager battleManager;
 
     public ScrollRect cardScrollRect;//滚动条
@@ -18,7 +17,7 @@ public class DeckManager2 : MonoBehaviour
     void Start()
     {
         //从游戏对象DataManager处获取这两个脚本
-        battleManager = BattleManager.GetComponent<BattleManager>();
+        battleManager = BattleManager.Instance;
 
     }
 
