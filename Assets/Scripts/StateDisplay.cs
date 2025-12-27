@@ -45,44 +45,23 @@ public class StateDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     //图片加载函数
     public void LoadImage(int _id)
     {
-        string imageEnemy = Application.dataPath + "/Image/State/" + _id.ToString() + ".png";
-        ChangeImage(Image, imageEnemy);
-    }
-
-    //替换图片
-    public void ChangeImage(GameObject blockImage, string imagePath)
-    {
-        Image imageComponent = blockImage.GetComponent<Image>();
-        if (imageComponent == null)
+        // 直接从单例缓存取精灵（无任何文件IO，耗时<0.1ms）
+        Sprite sprite = StateImageLoad.Instance.GetStateSprite(_id);
+        if (sprite == null)
         {
-            Debug.LogError("blockImage上未挂载Image组件！");
+            Debug.LogWarning($"状态{_id}的图片缓存不存在");
             return;
         }
-        // 检查文件是否存在
-        if (!File.Exists(imagePath))
-        {
-            Debug.LogError($"图片文件不存在：{imagePath}");
-            return;
-        }
-        byte[] imageBytes = File.ReadAllBytes(imagePath);// 读取图片文件字节数据
-        // 创建纹理并加载图片数据
-        Texture2D texture = new Texture2D(2, 2); // 初始尺寸任意，LoadImage会自动调整
-        if (texture.LoadImage(imageBytes))
-        {
-            // 将纹理转换为精灵
-            Sprite sprite = Sprite.Create(
-                texture,
-                new Rect(0, 0, texture.width, texture.height), // 精灵矩形区域（整个纹理）
-                new Vector2(0.5f, 0.5f) // 精灵中心点（中心位置）
-            );
 
-            // 设置Image组件的精灵
+        // 直接赋值精灵（无需再调用ChangeImage）
+        Image imageComponent = Image.GetComponent<Image>();
+        if (imageComponent != null)
+        {
             imageComponent.sprite = sprite;
         }
         else
         {
-            Debug.LogError($"加载图片数据失败：{imagePath}");
-            Destroy(texture); // 释放无效纹理
+            Debug.LogError("Image对象上无Image组件！");
         }
     }
 
@@ -106,6 +85,9 @@ public class StateDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
                 break;
             case 4://坚固
                 _text = "坚固\n每次获得格挡时额外获得相应层数的格挡";
+                break;
+            case 5://火焰附加
+                _text = "火焰附加\n每次攻击会额外施加相应层数的燃烧";
                 break;
         }
         Tip.text = _text;//设置文本

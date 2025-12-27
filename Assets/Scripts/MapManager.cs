@@ -408,7 +408,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
     {
         foreach (Vector2Int room in allRooms)//遍历逻辑坐标
         {
-            int roomSeed = seed + 100 * room.x + room.y; // 房间专属种子
+            int roomSeed = seed + 100 * room.x + room.y + 10 * Global_PlayerData.floor; // 房间专属种子
             List<int> roomSource;
             if (room.x == 0 && room.y == 0)//如果是起始房间（第一个主房间）
             {
@@ -417,6 +417,10 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
             else if (room.x == 3 && room.y == 0)//如果是商店房间（第四个主房间）
             {
                 roomSource = RandomShopSource(roomSeed);
+            }
+            else if (room.x == 5 && room.y == 0)//如果是BOSS房间（第六个主房间）
+            {
+                roomSource = RandomBossSource(roomSeed);
             }
             else
             {
@@ -444,17 +448,28 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         sourcePlace[randomIndex1] = randomValue1;
         //放置怪物
         int randomIndex2 = 5;
-        int randomValue2 = Random.Range(100, 103);
+        int randomValue2 = RandomEnemy();
         sourcePlace[randomIndex2] = randomValue2;
         return sourcePlace;
     }
+    //商店房间加载
 
     private List<int> RandomShopSource(int seed)
     {
         // 设置随机种子（可选，若需按房间定制种子）
         Random.InitState(seed+100);
-        int randomValue = Random.Range(100, 103);
+        int randomValue = RandomEnemy();
         List<int> source = new List<int>() { 0, 0, 0, 0, 4, randomValue, 0, 0, 0 };//中间为商店
+        return source;
+    }
+
+    //boss房间加载
+    private List<int> RandomBossSource(int seed)
+    {
+        // 设置随机种子（可选，若需按房间定制种子）
+        Random.InitState(seed + 200);
+        int randomValue = RandomBoss();
+        List<int> source = new List<int>() { 0, 0, 0, 0, 4, randomValue, 0, 0, 0 };//中间为传送门（还没做，用商店代替）
         return source;
     }
 
@@ -619,6 +634,32 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
             room.GetComponent<RoomDisplay>().RefreshDoorState();//更新它们的门状态
         }
         PlayerData.SavePlayerData();//保存所有数据
+    }
+
+    //根据层级获取随机的普通敌人
+    public int RandomEnemy()
+    {
+        int _enemy = 100;//默认为恶魔
+        switch (Global_PlayerData.floor)
+        {
+            case 0:
+                _enemy = Random.Range(100, 107);
+                break;
+        }
+        return _enemy;
+    }
+
+    //随机BOSS
+    public int RandomBoss()
+    {
+        int _boss = 1000;//默认为
+        switch (Global_PlayerData.floor)
+        {
+            case 0:
+                _boss = Random.Range(1000, 1003);//
+                break;
+        }
+        return _boss;
     }
 
 }

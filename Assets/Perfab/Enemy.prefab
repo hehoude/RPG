@@ -220,6 +220,7 @@ MonoBehaviour:
   fire: 0
   toxin: 0
   electricity: 0
+  fireAdd: 0
   attack: 0
   defense: 0
   build: 0
@@ -242,6 +243,7 @@ MonoBehaviour:
   BoomAnim_Prefab: {fileID: 7324161858544213378, guid: 7c17670841401834a86b03e8910f9dec, type: 3}
   ToxinAnim_Prefab: {fileID: 7324161858544213378, guid: 42e9d195e4c2a8f43973f025577e1665, type: 3}
   HurtAnim_Prefab: {fileID: 7324161858544213378, guid: 431c5f1ff3faaa8428459c0a3df1b79b, type: 3}
+  DefAnim_Prefab: {fileID: 7324161858544213378, guid: e0845de4cc3e0784db08e93a0e448f7f, type: 3}
   choose: 0
   Acing: 0
 --- !u!222 &1808544525291475032

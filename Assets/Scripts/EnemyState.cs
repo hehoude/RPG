@@ -1,10 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Playables;
 using UnityEngine.UI;
-using System;
-using System.IO;
 
 public class EnemyState : MonoBehaviour, IPointerDownHandler
 {
@@ -20,6 +22,7 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
     public int fire = 0;//燃烧层数
     public int toxin = 0;//毒素层数
     public int electricity = 0;//雷电层数
+    public int fireAdd = 0;//火焰附加层数
     [Header("意图")]
     public int attack;//攻击意图
     public int defense;//防御意图
@@ -47,6 +50,7 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
     public GameObject BoomAnim_Prefab;//燃烧特效
     public GameObject ToxinAnim_Prefab;//中毒特效
     public GameObject HurtAnim_Prefab;//受伤数字特效
+    public GameObject DefAnim_Prefab;//格挡特效
     [Header("其它")]
     public bool choose = false;//是否可被选择
     public bool Acing = false;//是否正在行动
@@ -258,7 +262,16 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
     //起甲函数
     public void GetArmor(int _armor)
     {
-        armor += (_armor + firm);
+        if (_armor > 0)
+        {
+            armor += (_armor + firm);//正数起甲才受到坚固影响
+            Instantiate(DefAnim_Prefab, EffectPlace);//播放动画
+        }
+        else
+        {
+            //零起甲或负数起甲可能是一些影响格挡的特殊效果，并非正常获取格挡
+            armor += _armor;
+        }
         Refresh();
     }
 
@@ -307,6 +320,14 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
         FreshState(4);
     }
 
+    //修改火焰附加函数
+    public void GetFireAdd(int _count)
+    {
+        fireAdd += _count;
+        if (fireAdd < 0) { fireAdd = 0; }
+        FreshState(5);
+    }
+
     //刷新状态栏（出于性能考虑，每次调用只刷新一种状态）
     public void FreshState(int _state)
     {
@@ -328,6 +349,9 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
                 break;
             case 4://坚固
                 state_Count = firm;
+                break;
+            case 5://火焰附加
+                state_Count = fireAdd;
                 break;
             default://传入未知变量则用默认值
                 //state_Count = strength;
@@ -416,7 +440,7 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
         switch (runningIntent)
         {
             case 0://攻击意图
-                target.TakeDamage(attack + strength);
+                EnemyAttack(attack, target);//基础数值即为攻击值
                 break;
             case 1://格挡意图
                 GetArmor(defense);
@@ -474,6 +498,22 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
         Instantiate(ToxinAnim_Prefab, EffectPlace);
     }
 
+    //敌人攻击意图
+    public void EnemyAttack(int _damage, PlayerState target)
+    {
+        int hurt = _damage + strength;//基础数值+力量
+        if (hurt > 0)//大于零才会打出伤害
+        {
+            //造成伤害
+            target.TakeDamage(hurt);
+            //是否有火焰附加
+            if (fireAdd > 0)
+            {
+                target.GetFire(fireAdd);//额外施加火焰
+            }
+        }
+    }
+
     //敌人强化意图
     public void EnemyBuild()
     {
@@ -482,6 +522,10 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
             case 0://恶魔
                 GetStrength(5);
                 build = -2;//隔2回合才能使用
+                break;
+            case 3://火苗
+                GetFireAdd(10);
+                build = 0;//不可再使用，不会恢复
                 break;
             default:
 
@@ -498,6 +542,10 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
                 _Target.GetStrength(-2);//减少目标2力量
                 negative = -3;//隔3回合才能使用
                 break;
+            case 4://魔蛛
+                _Target.GetToxin(10);//施加10中毒
+                negative = -3;//隔3回合才能使用
+                break;
             default:
 
                 break;
@@ -510,11 +558,13 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
         switch (id)
         {
             case 2://小鸡战士
-                int hurt = attack + strength - 4;
-                if (hurt < 0) { hurt = 0; }
-                _Target.TakeDamage(hurt);
+                EnemyAttack(attack - 4, _Target);
                 GetArmor(8);
                 special1 = -1;//隔1回合才能使用
+                break;
+            case 6://杀手蝎
+                EnemyAttack(attack +20, _Target);
+                special1 = -3;//隔3回合才能使用
                 break;
             default:
 
@@ -536,6 +586,16 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
             case 2://小鸡战士
                 special1 += 1;
                 break;
+            case 4://魔蛛
+                negative += 1;
+                break;
+            case 6://杀手蝎
+                special1 += 1;
+                if (special1>0)//如果CD满了
+                {
+                    enemyType.start = 4;//下一个意图必定为特殊意图1
+                }
+                break;
             default:
 
                 break;
@@ -546,12 +606,18 @@ public class EnemyState : MonoBehaviour, IPointerDownHandler
     public String EnemyText(int _id, int _type)//接受敌人ID与敌人意图代号
     {
         String _Text = String.Empty;
+        int hurt;
         switch (_id)
         {
             case 2://小鸡战士
-                int hurt = attack + strength - 4;
+                hurt = attack + strength - 4;
                 if (hurt < 0) { hurt = 0; }
                 _Text = "攻击：" + (hurt) + "\n防御：8";
+                break;
+            case 6://杀手蝎
+                hurt = attack + strength +20;
+                if (hurt < 0) { hurt = 0; }
+                _Text = "攻击：" + (hurt);
                 break;
             default:
 

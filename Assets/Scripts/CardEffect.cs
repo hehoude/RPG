@@ -28,12 +28,12 @@ public class CardEffect : MonoBehaviour
                 break;
             case 2://转守为攻
                 Anim_Attack();
-                enemyState.TakeDamage(playerState.armor + playerState.strength);
+                Attack(playerState.armor, enemyState);
                 playerState.GetArmor(-playerState.armor);
                 break;
             case 1002:
                 Anim_Attack();
-                enemyState.TakeDamage(playerState.armor + playerState.strength);
+                Attack(playerState.armor, enemyState);
                 playerState.GetArmor(-(playerState.armor/2));
                 break;
             case 3://戳刺
@@ -238,5 +238,10 @@ public class CardEffect : MonoBehaviour
         BattleManager.HandCount -= 1;//别忘了修改手牌数量
     }
 
+    //回调战斗管理器攻击函数（不触发动画）
+    public void Attack(int cardDamage, EnemyState enemyState)
+    {
+        BattleManager.Attack(cardDamage, enemyState);
+    }
 
 }

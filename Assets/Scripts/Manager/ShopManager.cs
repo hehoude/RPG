@@ -90,16 +90,19 @@ public class ShopManager : MonoSingleton<ShopManager>
         {
             n = Random.Range(0, White_Cards.Count);
             id = White_Cards[n];
+            White_Cards.RemoveAt(n);
         }
         else if (level == 2)
         {
             n = Random.Range(0, Blue_Cards.Count);
             id = Blue_Cards[n];
+            Blue_Cards.RemoveAt(n);
         }
         else if (level == 3)
         {
             n = Random.Range(0, Gold_Cards.Count);
             id = Gold_Cards[n];
+            Gold_Cards.RemoveAt(n);
         }
         return id;
     }
@@ -149,6 +152,8 @@ public class ShopManager : MonoSingleton<ShopManager>
             PlayerData.PlayerCardList.Add(cardObject);
             //下架卡牌
             CardBlock[_c].GetComponent<Block>().obj.SetActive(false);
+            //清除价格文本
+            Price[_c].text = "";
         }
     }
 

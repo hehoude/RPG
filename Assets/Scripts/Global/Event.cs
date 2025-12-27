@@ -23,11 +23,18 @@ public static class Event
     Event.SendCard -= hanshu();
     */
 
-    //带参数的出牌事件
+    //战斗管理器发出的出牌属性信号
     public static event Action<int> SendCard;
     public static void CallSendCard(int type)
     {
         SendCard?.Invoke(type);//将参数type传递给所有注册的函数
+    }
+
+    //回合结束事件
+    public static event Action TurnEnd;
+    public static void CallTurnEnd()
+    {
+        TurnEnd?.Invoke();
     }
 
 }

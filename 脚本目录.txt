@@ -45,6 +45,10 @@ X牌显示层在CardDisplay中有特殊处理
 2、EnemyState中加入特殊意图代码
 3、增加等同代号的图片
 
+地图敌人增加：
+4、在MapManager中的怪物随机池中加入怪物
+5、在RoomDisplay的CreateEnemy中加入对应怪物
+
 状态增加：
 1、在StateDisplay中添加相应介绍文本
 

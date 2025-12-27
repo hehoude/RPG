@@ -92,6 +92,10 @@ public class PlayerData : MonoSingleton<PlayerData>
             {
                 Global_PlayerData.seed = int.Parse(rowArray[1]);
             }
+            else if (rowArray[0] == "floor")//地图层级
+            {
+                Global_PlayerData.floor = int.Parse(rowArray[1]);
+            }
             else if (rowArray[0] == "progress")//游戏进度
             {
                 Global_PlayerData.progress = int.Parse(rowArray[1]);
@@ -205,6 +209,8 @@ public class PlayerData : MonoSingleton<PlayerData>
         datas.Add("id," + Global_PlayerData.id.ToString());
         //保存种子
         datas.Add("seed," + Global_PlayerData.seed.ToString());
+        //保存游戏进度
+        datas.Add("floor," + Global_PlayerData.floor.ToString());
         //保存游戏进度
         datas.Add("progress," + Global_PlayerData.progress.ToString());
         //保存逻辑位置

@@ -31,6 +31,8 @@ public class BattleManager : MonoSingleton<BattleManager>
     public GameObject enemyPrefab;//敌人游戏对象（预制体）
     public GameObject[] enemyBlocks;//敌人区域
     public GameObject ChooseCardBlock;//选牌显示窗
+    public GameObject ComboPlace;//连携显示区域
+    public GameObject ComboBar_Prefab;//连携指示条（预制体）
     [Header("管理器")]
     //public GameObject DataManager;//从数据管理器获取玩家数据
     private PlayerData PlayerData;
@@ -260,18 +262,31 @@ public class BattleManager : MonoSingleton<BattleManager>
     {
         foreach (int com in PlayerData.ComboList)
         {
+            List<int> comboList;//预设连携数组（用于赋给指示条）
             switch (com)
             {
                 case 0://重装战士连携
+                    //在comboRules中创建连携规则
                     comboRules.Add(new ComboRule(new int[] { 1, 1, 1 }, _ => TriggerRGBEffect(com), 1));
+                    comboList = new List<int>() { 1, 1, 1 };
                     break;
                 case 1://刺客连携
                     comboRules.Add(new ComboRule(new int[] { 2, 2, 2 }, _ => TriggerRGBEffect(com), 1));
+                    comboList = new List<int>() { 2, 2, 2 };
                     break;
                 case 2://元素使连携
                     comboRules.Add(new ComboRule(new int[] { 1, 2, 3 }, _ => TriggerRGBEffect(com), 1));
+                    comboList = new List<int>() { 1, 2, 3 };
+                    break;
+                default:
+                    comboList = new List<int>() { 1, 1, 1 };
+                    Debug.LogWarning("未知连携：" + com);
                     break;
             }
+            //在显示层创建连携可视化指示条
+            GameObject _ComboBar = Instantiate(ComboBar_Prefab, ComboPlace.transform);
+            //赋予连携数组
+            _ComboBar.GetComponent<ComboBar>().ComboList = comboList;
         }
     }
 
@@ -384,6 +399,7 @@ public class BattleManager : MonoSingleton<BattleManager>
                 delayTime += 1.0f;
             }
             playedCardNums.Clear();//清空连携记录
+            Event.CallTurnEnd();//发送回合结束信号（用于清除显示层连携指示器）
             NextPhase();
             Invoke("NextPhase", delayTime); //NextPhase执行一次会进入playerOver阶段,这里延迟0.5秒后再进入下一阶段enemyStart
         }
@@ -531,14 +547,8 @@ public class BattleManager : MonoSingleton<BattleManager>
             ChooseCardBlock.GetComponent<Block>().obj = _Card;//替换为新的牌
             _Card.GetComponent<BattleCard>().choosed = true;//显示此牌已经被选中
             //此时布局管理器可能被封锁，需要解封一下
-            ResetGrip();
+            HandGridLayout.enabled = true;
         }
-    }
-
-    //布局管理器反向
-    public void ResetGrip()
-    {
-        HandGridLayout.enabled = true;
     }
 
     //一次性设置所有敌人可选状态
@@ -666,7 +676,7 @@ public class BattleManager : MonoSingleton<BattleManager>
         Card attackCard = _Card.GetComponent<CardDisplay>().card;
         //由于玩家只有一个，所有玩家类采用全局变量
         EnemyState enemyState = _target.GetComponent<EnemyState>();//获取敌人状态类
-        int str = playerState.strength;//获取玩家力量
+        
 
         //检测卡牌是否有前置效果
         if (attackCard.front == 1)
@@ -678,7 +688,8 @@ public class BattleManager : MonoSingleton<BattleManager>
         if (attackCard.attack > 0)
         {
             Anim_Attack();//播放攻击动画
-            enemyState.TakeDamage(attackCard.attack + str + attackCard.imprint);//基础伤害+力量+卡牌额外印记
+            //卡牌面板伤害一般为卡牌的攻击值+印记值
+            Attack(attackCard.attack + attackCard.imprint, enemyState);
         }
         //向目标施加燃烧
         if (attackCard.fire > 0)
@@ -695,6 +706,17 @@ public class BattleManager : MonoSingleton<BattleManager>
 
         //调用effect函数完成剩余效果
         cardEffect.Effect(attackCard, enemyState, playerState);
+    }
+
+    //攻击函数（由于攻击会附带很多效果，故封装成专门函数）
+    public void Attack(int cardDamage, EnemyState enemyState)
+    {
+        enemyState.TakeDamage(cardDamage + playerState.strength);//卡牌面板伤害+玩家力量
+        //是否有火焰附加
+        if (playerState.fireAdd > 0)
+        {
+            enemyState.GetFire(playerState.fireAdd);//额外施加火焰
+        }
     }
 
     //卡牌结算
@@ -720,15 +742,13 @@ public class BattleManager : MonoSingleton<BattleManager>
         if (attackCard.element != 0)//如果不是普通牌则计入连携
         {
             playedCardNums.Add(attackCard.element);//计入连携
+            Event.CallSendCard(attackCard.element);//向显示层所有的连携指示条发送信号
             if (playedCardNums.Count > 5) playedCardNums.RemoveAt(0);//最多记录5张
             CheckNumComboEffects();//检查连携
         }
         FreshCardCount();//更新显示层
         Destroy(_Card);//销毁卡牌对象
         execute = false;//卡牌执行完成
-
-        //公开发送出牌事件
-        Event.CallSendCard(attackCard.type);//0攻击牌、1技能牌、2能力牌
 
         //判断由卡牌执行结束回合的命令是否开启
         if (Wait_TurnEnd)

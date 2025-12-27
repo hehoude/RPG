@@ -14,6 +14,7 @@ public class RoomDisplay : MonoBehaviour
     public GameObject ChoosePrefab;//三选一预制体
     public GameObject DoorPrefab;//门预制体
     public GameObject EnemyPrefab;//敌人预制体
+    public GameObject TransferPrefab;//传送门预制体
     [Header("资源接口")]
     private GameObject Door;//门对象
     private GameObject[] Source;//资源
@@ -37,6 +38,11 @@ public class RoomDisplay : MonoBehaviour
         if (!room.MainRoom && !room.Clear)
         {
             SourceSetActive(false);
+        }
+        //如果是主线房间则生成房间门
+        if (room.MainRoom && room.roomPos.x != 5)//最后一个房间不生成门
+        {
+            CreateDoor();
         }
         RefreshDoorState();//更新门状态
     }
@@ -85,12 +91,21 @@ public class RoomDisplay : MonoBehaviour
                 case 5://三选一
                     Source[i] = Instantiate(ChoosePrefab, sourceIcons[i]);
                     break;
+                case 6://传送门
+                    Source[i] = Instantiate(TransferPrefab, sourceIcons[i]);
+                    break;
                 default:
                     break;
             }
-            if (room.Source[i]>=100)
+            if (room.Source[i] >= 1000)
             {
-                //生成怪物（为方便后续迁移，另起一个函数）
+                //生成Boss
+                //Debug.Log("生成boss:"+(room.Source[i] - 1000));
+                CreateBoss(room.Source[i] - 1000, sourceIcons[i]);//ID偏移1000，从0开始计算
+            }
+            else if (room.Source[i]>=100)
+            {
+                //生成怪物
                 CreateEnemy(room.Source[i] - 100, sourceIcons[i]);//ID偏移100，从0开始计算
             }
         }
@@ -118,15 +133,6 @@ public class RoomDisplay : MonoBehaviour
         Door = Instantiate(DoorPrefab, vector3, Quaternion.Euler(0, 0, 90));
     }
 
-    //删除房间门
-    public void DeleteDoor()
-    {
-        if (Door != null) 
-        { Destroy(Door); }
-        else
-        { Debug.Log("没有找到房间门"); }
-    }
-
     //找到玩家数据保存玩家当前位置
     public void SavePlayerPos()
     {
@@ -143,16 +149,13 @@ public class RoomDisplay : MonoBehaviour
             int roomNumber = room.roomPos.x;
             if (progress - 1 == roomNumber)//判断游戏进度决定是否需要开门
             {
-                //Debug.Log("当前房间号为："+ roomNumber+",进度为"+ progress+",故开门");
-                DeleteDoor();
+                //开门
+                Door.SetActive(false);
             }
             else
             {
-                //Debug.Log("当前房间号为：" + roomNumber + ",进度为" + progress + ",故关门");
-                if (Door == null)
-                {
-                    CreateDoor();//没有门则创建门
-                }
+                //关门
+                Door.SetActive(true);
             }
         }
     }
@@ -160,8 +163,56 @@ public class RoomDisplay : MonoBehaviour
     //创建敌人
     public void CreateEnemy(int number, Transform place)
     {
-        int[] _enemies = new int[] { 0 };
-        int _id = 0;
+        int[] _enemies = new int[] { 0 };//敌人代号数组（最多3个敌人）
+        int Image_id = 0;//在大地图中显示的图片（一组里面可能有多个不同敌人，需要选其中一个敌人作为“代表”）
+        switch (number)
+        {
+            case 0://恶魔1
+                _enemies = new int[] { 0 };
+                Image_id = 0;
+                break;
+            case 1://幽灵1
+                _enemies = new int[] { 1 };
+                Image_id = 1;
+                break;
+            case 2://小鸡战士1
+                _enemies = new int[] { 2 };
+                Image_id = 2;
+                break;
+            case 3://火苗1
+                _enemies = new int[] { 3 };
+                Image_id = 3;
+                break;
+            case 4://魔蛛1
+                _enemies = new int[] { 4 };
+                Image_id = 4;
+                break;
+            case 5://恶魔1史莱姆1
+                _enemies = new int[] { 0, 5 };
+                Image_id = 0;
+                break;
+            case 6://杀手蝎1
+                _enemies = new int[] { 6 };
+                Image_id = 6;
+                break;
+            default:
+                Debug.Log("未知敌人，默认创建单个恶魔:" + number);
+                break;
+        }
+        //参数配置完毕后创建敌人
+        GameObject Enemy = Instantiate(EnemyPrefab, place);
+        Enemy.GetComponent<EnterBattle>().ImageId = Image_id;
+        Enemy.GetComponent<EnterBattle>().enemies = _enemies;
+        Enemy.GetComponent<EnterBattle>().currentId = number + 100;//传递对象的ID
+        //有敌人被创建时，强制将房间的clean状态变为false
+        room.Clear = false;
+    }
+
+    //创建Boss
+    public void CreateBoss(int number, Transform place)
+    {
+        int[] _enemies = new int[] { 0 };//敌人代号数组（最多3个敌人）
+        int _id = 0;//在大地图中显示的图片（一组里面可能有多个不同敌人，需要选其中一个敌人作为“代表”）
         switch (number)
         {
             case 0://恶魔1
@@ -176,8 +227,12 @@ public class RoomDisplay : MonoBehaviour
                 _enemies = new int[] { 2 };
                 _id = 2;
                 break;
+            case 3://火苗1
+                _enemies = new int[] { 3 };
+                _id = 3;
+                break;
             default:
-                Debug.Log("未知敌人，默认创建单个恶魔");
+                Debug.Log("未知敌人，默认创建单个恶魔" + number);
                 break;
         }
         //参数配置完毕后创建敌人

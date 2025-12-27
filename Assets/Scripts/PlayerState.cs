@@ -23,6 +23,7 @@ public class PlayerState : MonoBehaviour
     public int fire = 0;//燃烧层数
     public int toxin = 0;//毒素层数
     public int electricity = 0;//雷电层数
+    public int fireAdd = 0;//火焰附加层数
     [Header("UI")]
     public Text nameText;
     public Text hpText;
@@ -38,7 +39,8 @@ public class PlayerState : MonoBehaviour
     public Transform EffectPlace; //特效区域
     public GameObject BoomAnim_Prefab;//燃烧特效
     public GameObject ToxinAnim_Prefab;//中毒特效
-    public GameObject HurtAnim_Prefab;//受伤特效
+    public GameObject HurtAnim_Prefab;//受伤数字特效
+    public GameObject DefAnim_Prefab;//格挡特效
     [Header("其它")]
     //public GameObject DataManager;//从数据管理器获取玩家数据
     private PlayerData PlayerData;
@@ -179,7 +181,16 @@ public class PlayerState : MonoBehaviour
     //起甲函数
     public void GetArmor(int _armor)
     {
-        armor += (_armor + firm);
+        if (_armor > 0)
+        {
+            armor += (_armor + firm);//正数起甲才受到坚固影响
+            Instantiate(DefAnim_Prefab, EffectPlace);//播放动画
+        }
+        else
+        {
+            //零起甲或负数起甲可能是一些影响格挡的特殊效果，并非正常获取格挡
+            armor += _armor;
+        }
         Refresh();
     }
 
@@ -228,6 +239,14 @@ public class PlayerState : MonoBehaviour
         FreshState(4);
     }
 
+    //修改火焰附加函数
+    public void GetFireAdd(int _count)
+    {
+        fireAdd += _count;
+        if (fireAdd < 0) { fireAdd = 0; }
+        FreshState(5);
+    }
+
     //刷新状态栏（出于性能考虑，每次调用只刷新一种状态）
     public void FreshState(int _state)
     {
@@ -249,6 +268,9 @@ public class PlayerState : MonoBehaviour
                 break;
             case 4://坚固
                 state_Count = firm;
+                break;
+            case 5://火焰附加
+                state_Count = fireAdd;
                 break;
             default://传入未知变量则用默认值
                 //state_Count = strength;
