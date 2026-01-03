@@ -41,9 +41,10 @@ StartGameCanvas：打开其它场景
 X牌显示层在CardDisplay中有特殊处理
 
 敌人增加：
-1、EnemyList中加入敌人属性
+1、在表格EnemyList中加入敌人属性
 2、EnemyState中加入特殊意图代码
 3、增加等同代号的图片
+4、如果需要在地图上生成，需要在MapManager和RoomDisplay中添加
 
 地图敌人增加：
 4、在MapManager中的怪物随机池中加入怪物

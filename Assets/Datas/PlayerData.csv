@@ -1,9 +1,10 @@
 maxhp,70
-hp,70
-coins,99
-id,0
-seed,-2113742920
+hp,59
+coins,69
+id,3
+seed,-634030800
 floor,0
-progress,0
-x,0
+progress,5
+x,5
 y,0
+combo,2

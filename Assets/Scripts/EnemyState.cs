@@ -139,6 +139,7 @@ public class EnemyState : BattleState, IPointerDownHandler
         else
         {
             runningIntent = enemyType.start;//变为指定意图
+            if (runningIntent == 100) { runningIntent = 0; }//用100号初始意图代替攻击意图
             enemyType.start = 0;
         }
         string _intent;
@@ -150,7 +151,9 @@ public class EnemyState : BattleState, IPointerDownHandler
                 _intent = "攻击：" + (hurt);
                 break;
             case 1://格挡意图
-                _intent = "防御：" + defense;
+                int def = defense + firm;
+                if (def < 0) { def = 0; }
+                _intent = "防御：" + def;
                 break;
             case 2://强化意图
                 _intent = "强化";
@@ -219,7 +222,7 @@ public class EnemyState : BattleState, IPointerDownHandler
         Image.GetComponent<EnemyImage>().Donghua();//播放行动动画（1秒）
     }
 
-    //行动结算（这个函数会在动画播放时由EnemyImage触发）
+    //执行意图（这个函数会在动画播放时由EnemyImage触发）
     public void Action()
     {
         //数据层执行意图
@@ -230,7 +233,7 @@ public class EnemyState : BattleState, IPointerDownHandler
                 EnemyAttack(attack, target);//基础数值即为攻击值
                 break;
             case 1://格挡意图
-                GetArmor(defense);
+                EnemyDefence(defense);
                 break;
             case 2://强化意图
                 EnemyBuild();
@@ -286,9 +289,9 @@ public class EnemyState : BattleState, IPointerDownHandler
     }
 
     //敌人攻击意图
-    public void EnemyAttack(int _damage, PlayerState target)
+    public void EnemyAttack(int damage, PlayerState target)
     {
-        int hurt = _damage + strength;//基础数值+力量
+        int hurt = damage + strength;//基础数值+力量
         if (hurt > 0)//大于零才会打出伤害
         {
             //造成伤害（自身为伤害来源）
@@ -298,6 +301,31 @@ public class EnemyState : BattleState, IPointerDownHandler
             {
                 target.GetFire(fireAdd);//额外施加火焰
             }
+        }
+        //攻击附加效果（部分敌人可以有）
+        switch (id)
+        {
+            case 7:
+                enemyType.start = 1;//指定下一个为防御意图
+                break;
+            default:
+                break;
+        }
+    }
+
+    //敌人防御意图
+    public void EnemyDefence(int _defence)
+    {
+        int def = _defence + firm;//附加坚固
+        GetArmor(def);
+        //防御附加效果（部分敌人可以有）
+        switch (id)
+        {
+            case 7:
+                enemyType.start = 2;//指定下一个为强化意图
+                break;
+            default:
+                break;
         }
     }
 
@@ -313,6 +341,11 @@ public class EnemyState : BattleState, IPointerDownHandler
             case 3://火苗
                 GetFireAdd(10);
                 build = 0;//不可再使用，不会恢复
+                break;
+            case 7://哥布林英雄
+                GetStrength(3);
+                GetFirm(3);
+                enemyType.start = 100;//指定下一个为攻击意图
                 break;
             default:
 
@@ -346,7 +379,7 @@ public class EnemyState : BattleState, IPointerDownHandler
         {
             case 2://小鸡战士
                 EnemyAttack(attack - 4, _Target);
-                GetArmor(8);
+                EnemyDefence(8);
                 special1 = -1;//隔1回合才能使用
                 break;
             case 6://杀手蝎
@@ -380,7 +413,7 @@ public class EnemyState : BattleState, IPointerDownHandler
                 special1 += 1;
                 if (special1>0)//如果CD满了
                 {
-                    enemyType.start = 4;//下一个意图必定为特殊意图1
+                    enemyType.start = 4;//下一个意图为特殊意图1
                 }
                 break;
             default:

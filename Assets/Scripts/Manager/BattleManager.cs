@@ -137,6 +137,10 @@ public class BattleManager : MonoSingleton<BattleManager>
             runningCard = null;//运行中的卡牌被清除
             EnemyChoose(false);//将所有敌人设为不可选
         }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            OnClickTurnEnd(); // 调用你要触发的函数
+        }
     }
 
     //void OnEnable()

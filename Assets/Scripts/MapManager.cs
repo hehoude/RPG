@@ -490,7 +490,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         // 设置随机种子（可选，若需按房间定制种子）
         Random.InitState(seed + 200);
         int randomValue = RandomBoss();
-        List<int> source = new List<int>() { 0, 0, 0, 0, 6, randomValue, 0, 0, 0 };//中间为传送门（还没做，用商店代替）
+        List<int> source = new List<int>() { 0, 0, 0, 0, 6, randomValue, 0, 0, 0 };//中间为传送门
         return source;
     }
 
@@ -701,7 +701,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         {
             case 0:
             case 1:
-                _boss = Random.Range(1000, 1003);//
+                _boss = Random.Range(1000, 1001);
                 break;
         }
         return _boss;

@@ -101,12 +101,12 @@ public class RoomDisplay : MonoBehaviour
             {
                 //生成Boss
                 //Debug.Log("生成boss:"+(room.Source[i] - 1000));
-                CreateBoss(room.Source[i] - 1000, sourceIcons[i]);//ID偏移1000，从0开始计算
+                CreateBoss(room.Source[i], sourceIcons[i]);//ID偏移1000，从0开始计算
             }
             else if (room.Source[i]>=100)
             {
                 //生成怪物
-                CreateEnemy(room.Source[i] - 100, sourceIcons[i]);//ID偏移100，从0开始计算
+                CreateEnemy(room.Source[i], sourceIcons[i]);//ID偏移100，从0开始计算
             }
         }
         //Debug.Log("房间"+room.id+"资源点显示完成");
@@ -152,13 +152,13 @@ public class RoomDisplay : MonoBehaviour
             {
                 //开门
                 Door.SetActive(false);
-                Debug.Log("开门");
+                //Debug.Log("开门");
             }
             else
             {
                 //关门
                 Door.SetActive(true);
-                Debug.Log("关门");
+                //Debug.Log("关门");
             }
         }
     }
@@ -170,31 +170,31 @@ public class RoomDisplay : MonoBehaviour
         int Image_id = 0;//在大地图中显示的图片（一组里面可能有多个不同敌人，需要选其中一个敌人作为“代表”）
         switch (number)
         {
-            case 0://恶魔1
+            case 100://恶魔1
                 _enemies = new int[] { 0 };
                 Image_id = 0;
                 break;
-            case 1://幽灵1
+            case 101://幽灵1
                 _enemies = new int[] { 1 };
                 Image_id = 1;
                 break;
-            case 2://小鸡战士1
+            case 102://小鸡战士1
                 _enemies = new int[] { 2 };
                 Image_id = 2;
                 break;
-            case 3://火苗1
+            case 103://火苗1
                 _enemies = new int[] { 3 };
                 Image_id = 3;
                 break;
-            case 4://魔蛛1
+            case 104://魔蛛1
                 _enemies = new int[] { 4 };
                 Image_id = 4;
                 break;
-            case 5://恶魔1史莱姆1
+            case 105://恶魔1史莱姆1
                 _enemies = new int[] { 0, 5 };
                 Image_id = 0;
                 break;
-            case 6://杀手蝎1
+            case 106://杀手蝎1
                 _enemies = new int[] { 6 };
                 Image_id = 6;
                 break;
@@ -206,7 +206,7 @@ public class RoomDisplay : MonoBehaviour
         GameObject Enemy = Instantiate(EnemyPrefab, place);
         Enemy.GetComponent<EnterBattle>().ImageId = Image_id;
         Enemy.GetComponent<EnterBattle>().enemies = _enemies;
-        Enemy.GetComponent<EnterBattle>().currentId = number + 100;//传递对象的ID
+        Enemy.GetComponent<EnterBattle>().currentId = number;//传递对象的ID
         //有敌人被创建时，强制将房间的clean状态变为false
         room.Clear = false;
     }
@@ -214,35 +214,23 @@ public class RoomDisplay : MonoBehaviour
     //创建Boss
     public void CreateBoss(int number, Transform place)
     {
-        int[] _enemies = new int[] { 0 };//敌人代号数组（最多3个敌人）
-        int _id = 0;//在大地图中显示的图片（一组里面可能有多个不同敌人，需要选其中一个敌人作为“代表”）
+        int[] _enemies = new int[] { 7 };//敌人代号数组（最多3个敌人）
+        int _id = 7;//在大地图中显示的图片（一组里面可能有多个不同敌人，需要选其中一个敌人作为“代表”）
         switch (number)
         {
-            case 0://恶魔1
-                _enemies = new int[] { 0 };
-                _id = 0;
-                break;
-            case 1://幽灵1
-                _enemies = new int[] { 1 };
-                _id = 1;
-                break;
-            case 2://小鸡战士1
-                _enemies = new int[] { 2 };
-                _id = 2;
-                break;
-            case 3://火苗1
-                _enemies = new int[] { 3 };
-                _id = 3;
+            case 1000://哥布林英雄
+                _enemies = new int[] { 7 };
+                _id = 7;
                 break;
             default:
-                Debug.Log("未知敌人，默认创建单个恶魔" + number);
+                Debug.Log("未知敌人，默认创建哥布林英雄" + number);
                 break;
         }
         //参数配置完毕后创建敌人
         GameObject Enemy = Instantiate(EnemyPrefab, place);
         Enemy.GetComponent<EnterBattle>().ImageId = _id;
         Enemy.GetComponent<EnterBattle>().enemies = _enemies;
-        Enemy.GetComponent<EnterBattle>().currentId = number + 100;//传递对象的ID
+        Enemy.GetComponent<EnterBattle>().currentId = number;//传递对象的ID
         //有敌人被创建时，强制将房间的clean状态变为false
         room.Clear = false;
     }
