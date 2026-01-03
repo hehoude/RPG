@@ -14,7 +14,7 @@ public class RoomDisplay : MonoBehaviour
     public GameObject ChoosePrefab;//三选一预制体
     public GameObject DoorPrefab;//门预制体
     public GameObject EnemyPrefab;//敌人预制体
-    public GameObject TransferPrefab;//传送门预制体
+    public GameObject TransPrefab;//传送门预制体
     [Header("资源接口")]
     private GameObject Door;//门对象
     private GameObject[] Source;//资源
@@ -92,7 +92,7 @@ public class RoomDisplay : MonoBehaviour
                     Source[i] = Instantiate(ChoosePrefab, sourceIcons[i]);
                     break;
                 case 6://传送门
-                    Source[i] = Instantiate(TransferPrefab, sourceIcons[i]);
+                    Source[i] = Instantiate(TransPrefab, sourceIcons[i]);
                     break;
                 default:
                     break;
@@ -130,7 +130,8 @@ public class RoomDisplay : MonoBehaviour
     public void CreateDoor()
     {
         Vector3 vector3 = new Vector3(room.roomPos.x * 24 + 12, room.roomPos.y * 24, 0);
-        Door = Instantiate(DoorPrefab, vector3, Quaternion.Euler(0, 0, 90));
+        //创建的门需要显示指定父对象", transform"，否则房间被删除时门不会删除
+        Door = Instantiate(DoorPrefab, vector3, Quaternion.Euler(0, 0, 90), transform);
     }
 
     //找到玩家数据保存玩家当前位置
@@ -151,11 +152,13 @@ public class RoomDisplay : MonoBehaviour
             {
                 //开门
                 Door.SetActive(false);
+                Debug.Log("开门");
             }
             else
             {
                 //关门
                 Door.SetActive(true);
+                Debug.Log("关门");
             }
         }
     }

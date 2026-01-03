@@ -351,6 +351,19 @@ public class PlayerData : MonoSingleton<PlayerData>
                 _card.attack += 2;
                 _card.electricity += 2;
                 break;
+            case 28://燃烧之手
+                break;
+            case 29://喷火
+                _card.fire += 3;
+                break;
+            case 30://备用护盾
+                _card.defense += 3;
+                break;
+            case 31://完美弹反
+                _card.keep = 2;
+                break;
+            case 32://钢筋铁骨
+                break;
         }
         return _card;
     }

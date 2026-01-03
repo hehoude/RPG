@@ -89,6 +89,12 @@ public class StateDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             case 5://火焰附加
                 _text = "火焰附加\n每次攻击会额外施加相应层数的燃烧";
                 break;
+            case 6://弹反
+                _text = "弹反\n承受敌人攻击后，如果生命没有减少且格挡正好为0，对攻击者造成等同本次攻击的伤害";
+                break;
+            case 7://免疫
+                _text = "免疫\n受到伤害时，减少等同层数的伤害";
+                break;
         }
         Tip.text = _text;//设置文本
     }

@@ -1,0 +1,271 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class BattleState : MonoBehaviour
+{
+    [Header("基本属性")]
+    public int id;
+    public int hp;//生命值
+    public int maxhp;//最大生命值
+    public bool life = true;//生存状况
+    public int armor = 0;//护甲
+    [Header("主要状态")]
+    public int strength = 0;//力量
+    public int firm = 0;//坚固
+    public int fire = 0;//燃烧层数
+    public int toxin = 0;//毒素层数
+    public int electricity = 0;//雷电层数
+    public int fireAdd = 0;//火焰附加层数
+    public int beatBack = 0;//弹反层数
+    public int immune = 0;//免疫层数
+    [Header("UI")]
+    public Text nameText;
+    public Text hpText;
+    public Text maxhpText;
+    public Text armorText;
+    public Slider hpbar;
+    public GameObject Image;//图片对象
+    [Header("状态")]
+    public Transform State;//状态栏
+    public Dictionary<int, GameObject> State_Objects;//存储所有状态指示器的引用
+    public GameObject State_Prefab;//状态图标预制体
+    [Header("特效")]
+    public Transform EffectPlace; //特效区域
+    public GameObject BoomAnim_Prefab;//燃烧特效
+    public GameObject ToxinAnim_Prefab;//中毒特效
+    public GameObject HurtAnim_Prefab;//受伤数字特效
+    public GameObject DefAnim_Prefab;//格挡特效
+    [Header("标志位")]
+    public bool Acing = false;//是否正在行动
+
+    //更新显示层
+    public void Refresh()
+    {
+        hpText.text = hp.ToString();//更新当前生命
+        hpbar.value = (float)hp / (float)maxhp;//更新血条
+        armorText.text = armor.ToString();//更新格挡
+    }
+
+    //带来源的伤害函数
+    public void TakeDamage(int damage, EnemyState Attacker)
+    {
+        //记录初始生命
+        int old_hp = hp;
+        TakeDamage(damage);//执行伤害
+        //检测弹反条件（仅玩家有弹反机制）
+        if (beatBack>0 && old_hp == hp && armor == 0 && this is PlayerState)
+        {
+            //弹反
+            Attacker.TakeDamage(damage);
+        }
+    }
+
+    //伤害函数
+    public void TakeDamage(int damage)
+    {
+        //雷电附加
+        if (electricity > 0)
+        {
+            damage += electricity;
+            GetElectricity(-1);
+            if (electricity > 5) { GetElectricity(-1); }//大于5层额外扣减
+        }
+        //播放受伤特效
+        GameObject hurt_count = Instantiate(HurtAnim_Prefab, EffectPlace);
+        hurt_count.GetComponent<Text>().text = damage.ToString();
+        //伤害结算
+        armor -= damage;//掉甲
+        if (armor < 0)
+        {
+            armor += immune;//免疫结算
+            if (armor < 0) {hp += armor; }//扣血 
+            armor = 0;
+        }
+        if (hp < 0) hp = 0;
+        Refresh();//更新显示层
+        //死亡
+        if (hp <= 0)
+        {
+            gameObject.SetActive(false);
+            life = false;
+            Acing = false;//通知协程函数行动结束
+            //通知战斗管理器验证一次是否胜利
+            BattleManager.Instance.CheckWin();
+        }
+    }
+
+    //放血函数
+    public void LostHp(int damage)
+    {
+        hp -= damage;
+        Refresh();
+        //死亡
+        if (hp <= 0)
+        {
+            gameObject.SetActive(false);
+            life = false;
+            //通知战斗管理器验证一次是否胜利
+            BattleManager.Instance.CheckWin();
+        }
+    }
+
+    //治疗函数
+    public void Heal(int _count)
+    {
+        hp += _count;//回血
+        if (hp > maxhp) { hp = maxhp; }
+        Refresh();//更新显示层
+    }
+
+    //起甲函数
+    public void GetArmor(int _armor)
+    {
+        if (_armor > 0)
+        {
+            armor += (_armor + firm);//正数起甲才受到坚固影响
+            Instantiate(DefAnim_Prefab, EffectPlace);//播放动画
+        }
+        else
+        {
+            //零起甲或负数起甲可能是一些影响格挡的特殊效果，并非正常获取格挡
+            armor += _armor;
+        }
+        Refresh();
+    }
+
+    //清空格挡函数
+    public void CleanArmor()
+    {
+        armor = 0;
+        Refresh();
+    }
+
+    //修改力量函数
+    public void GetStrength(int _strength)
+    {
+        strength += _strength;
+        FreshState(0);
+    }
+
+    //修改燃烧函数
+    public void GetFire(int _count)
+    {
+        fire += _count;
+        if (fire < 0) { fire = 0; }
+        FreshState(1);
+    }
+
+    //修改毒素函数
+    public void GetToxin(int _count)
+    {
+        toxin += _count;
+        if (toxin < 0) { toxin = 0; }
+        FreshState(2);
+    }
+
+    //修改雷电函数
+    public void GetElectricity(int _count)
+    {
+        electricity += _count;
+        if (electricity < 0) { electricity = 0; }
+        FreshState(3);
+    }
+
+    //修改坚固函数
+    public void GetFirm(int _firm)
+    {
+        firm += _firm;
+        FreshState(4);
+    }
+
+    //修改火焰附加函数
+    public void GetFireAdd(int _count)
+    {
+        fireAdd += _count;
+        if (fireAdd < 0) { fireAdd = 0; }
+        FreshState(5);
+    }
+
+    //刷新状态栏（出于性能考虑，每次调用只刷新一种状态）
+    public void FreshState(int _state)
+    {
+        int state_Count = 0;
+        GameObject state_Object = null;
+        switch (_state)
+        {
+            case 0://力量
+                state_Count = strength;
+                break;
+            case 1://燃烧
+                state_Count = fire;
+                break;
+            case 2://中毒
+                state_Count = toxin;
+                break;
+            case 3://雷电
+                state_Count = electricity;
+                break;
+            case 4://坚固
+                state_Count = firm;
+                break;
+            case 5://火焰附加
+                state_Count = fireAdd;
+                break;
+            case 6://弹反
+                state_Count = beatBack;
+                break;
+            case 7://免疫
+                state_Count = immune;
+                break;
+            default://传入未知变量则用默认值
+                //state_Count = strength;
+                //state_Object = ref Strength_State;
+                Debug.Log("状态栏刷新异常！");
+                break;
+        }
+        if (state_Count != 0)//检测数值
+        {
+            // 尝试从字典取值
+            bool hasStateInDict = State_Objects.TryGetValue(_state, out state_Object);
+
+            // 校验对象是否有效（未销毁/非null）
+            bool isStateObjValid = state_Object != null && state_Object;
+
+            // 无有效对象 → 创建新图标
+            if (!hasStateInDict || !isStateObjValid)
+            {
+                //调用状态管理器创建图标
+                state_Object = AddState(_state, State.transform);
+                //放入字典
+                State_Objects[_state] = state_Object;
+            }
+            state_Object.GetComponent<StateDisplay>().FreshCount(state_Count);//更新数值文本
+        }
+        else if (state_Count == 0)
+        {
+            if (!State_Objects.TryGetValue(_state, out state_Object))
+            {
+                Debug.LogWarning($"状态栏{_state}不存在字典中！");
+                return;
+            }
+            if (state_Object != null) // 先判断对象是否有效（避免重复销毁）
+            {
+                Destroy(state_Object);
+            }
+            // 清空字典中该状态的引用
+            State_Objects[_state] = null;
+        }
+    }
+
+    //添加状态主要图标，接收状态id与添加位置，返回图标对象
+    public GameObject AddState(int _state, Transform _stateLab)
+    {
+        GameObject NewState = Instantiate(State_Prefab, _stateLab);//添加状态图标
+        StateDisplay stateDisplay = NewState.GetComponent<StateDisplay>();//获取脚本
+        stateDisplay.id = _state;//赋予状态id
+        return NewState;
+    }
+
+}

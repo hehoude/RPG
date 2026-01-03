@@ -324,6 +324,7 @@ MonoBehaviour:
   ChoosePrefab: {fileID: 8331445310670172608, guid: 8ff715757ec497c4fbcea497b9558b6a, type: 3}
   DoorPrefab: {fileID: 7259925250539504423, guid: c9a721da6efaa7847a77e18ac779ecc6, type: 3}
   EnemyPrefab: {fileID: 1782639118839263894, guid: 778ce58578e37f94093db4ddd4ed3191, type: 3}
+  TransPrefab: {fileID: 8331445310670172608, guid: 60c5fcb923b973e429dc6c41dd89b37c, type: 3}
 --- !u!1 &7333837129124711026
 GameObject:
   m_ObjectHideFlags: 0

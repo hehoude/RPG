@@ -33,6 +33,10 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
     public GameObject GroundMap; // 地面地图对象
     private Tilemap_Ground groundGenerator; // 引用地面生成脚本
 
+    [Header("树木生成器引用")]
+    public GameObject TreeMap; // 树木地图对象
+    private Tilemap_Tree treeGenerator; // 引用树木生成脚本
+
     [Header("房间引用")]
     public GameObject RoomPrefab; // 房间预制体引用
     public Transform Rooms; // 房间父物体引用
@@ -107,12 +111,15 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         //判断是新游戏还是读取存档
         if (Global_PlayerData.newGame)
         {
+            //随机新的种子（修改全局种子）
+            Global_PlayerData.seed = Random.Range(int.MinValue, int.MaxValue);
             CreateNewRandomMap();//新游戏生成新地图
             PlayerData.SaveBaseData();//让PlayerData保存种子
         }
         else
         {
-            seed = Global_PlayerData.seed;//读取存档使用的种子（种子已经被PlayerData加载）
+            //读取存档使用的种子（种子已经被PlayerData加载）
+            seed = Global_PlayerData.seed + Global_PlayerData.floor * 1000;
             LoadMap();//读取存档加载旧地图
         }
         SeedCount.text = "种子编号: " + Global_PlayerData.seed.ToString();//显示种子编号
@@ -140,6 +147,15 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         {
             Debug.LogError("未设置WallMap对象引用！");
         }
+        // 获取树木生成脚本引用
+        if (TreeMap != null)
+        {
+            treeGenerator = TreeMap.GetComponent<Tilemap_Tree>();
+        }
+        else
+        {
+            Debug.LogError("未设置TreeMap对象引用！");
+        }
     }
 
     /// <summary>
@@ -148,10 +164,8 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
     /// <param name="seed">随机种子</param>
     public void CreateNewRandomMap()
     {
-        //随机新的种子（修改全局种子）
-        Global_PlayerData.seed = Random.Range(int.MinValue, int.MaxValue);
-        seed = Global_PlayerData.seed;
-
+        //种子关联层级
+        seed = Global_PlayerData.seed + Global_PlayerData.floor * 1000;
         // 设置随机种子
         Random.InitState(seed);
 
@@ -354,6 +368,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         // 清空原有地图
         wallGenerator.targetTilemap.ClearAllTiles();
         groundGenerator.targetTilemap.ClearAllTiles();
+        treeGenerator.targetTilemap.ClearAllTiles();
         // 先销毁父物体下已有的房间预制体（避免重复生成）
         if (Rooms != null)
         {
@@ -382,6 +397,12 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
                 );
                 //生成地面
                 groundGenerator.GenerateNoiseMap(
+                    _seed: seed,
+                    _cenx: center.x,
+                    _ceny: center.y
+                );
+                //生成树木
+                treeGenerator.GenerateNoiseMap(
                     _seed: seed,
                     _cenx: center.x,
                     _ceny: center.y
@@ -469,7 +490,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         // 设置随机种子（可选，若需按房间定制种子）
         Random.InitState(seed + 200);
         int randomValue = RandomBoss();
-        List<int> source = new List<int>() { 0, 0, 0, 0, 4, randomValue, 0, 0, 0 };//中间为传送门（还没做，用商店代替）
+        List<int> source = new List<int>() { 0, 0, 0, 0, 6, randomValue, 0, 0, 0 };//中间为传送门（还没做，用商店代替）
         return source;
     }
 
@@ -562,7 +583,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         Player.transform.position = 
             new Vector3(Global_PlayerData.currentRoom.x * roomInterval, 
             Global_PlayerData.currentRoom.y * roomInterval, 0);
-        Debug.Log("地图加载完成，玩家坐标更改为x:"+ Global_PlayerData.currentRoom.x * roomInterval + ",y:" + Global_PlayerData.currentRoom.y * roomInterval);
+        //Debug.Log("地图加载完成，玩家坐标更改为x:"+ Global_PlayerData.currentRoom.x * roomInterval + ",y:" + Global_PlayerData.currentRoom.y * roomInterval);
     }
 
     //删除当前交互对象（SourceId为资源代号）
@@ -636,6 +657,28 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         PlayerData.SavePlayerData();//保存所有数据
     }
 
+    //层级推进
+    public void NextFloor()
+    {
+        Global_PlayerData.progress = 0;//进度清零
+        Global_PlayerData.floor += 1;//层级+1
+        //房间数据重新初始化
+        roomCenterPositions = new Dictionary<Vector2Int, Vector2Int>();
+        allRooms = new List<Vector2Int>();
+        roomOpenStates = new Dictionary<Vector2Int, RoomOpenState>();
+        candidateRooms = new List<Vector2Int>();
+        roomSourceData = new Dictionary<Vector2Int, List<int>>();
+        roomObjects = new Dictionary<Vector2Int, GameObject>();
+        //重置地图
+        CreateNewRandomMap();
+        //重置玩家位置
+        Global_PlayerData.currentRoom.x = 0;
+        Global_PlayerData.currentRoom.y = 0;
+        LoadPlayerPlace();//初始化玩家位置
+        //保存数据
+        PlayerData.SaveBaseData();
+    }
+
     //根据层级获取随机的普通敌人
     public int RandomEnemy()
     {
@@ -643,6 +686,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         switch (Global_PlayerData.floor)
         {
             case 0:
+            case 1:
                 _enemy = Random.Range(100, 107);
                 break;
         }
@@ -656,6 +700,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
         switch (Global_PlayerData.floor)
         {
             case 0:
+            case 1:
                 _boss = Random.Range(1000, 1003);//
                 break;
         }

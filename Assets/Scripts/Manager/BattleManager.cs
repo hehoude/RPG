@@ -62,6 +62,12 @@ public class BattleManager : MonoSingleton<BattleManager>
     public CardEffect cardEffect;
     public List<GameObject> activeEnemies;//可用敌人容器（用于遍历与随机）
     public bool Wait_TurnEnd = false;//即将结束回合
+    public GamePhase GamePhase = GamePhase.gameStart;//战斗阶段枚举
+    public UnityEvent phaseChangeEvent = new UnityEvent();//创建阶段切换事件
+    public int HandCount = 0;//手牌数量（目前只有三种变化途径：抽牌、弃牌、打牌，后续可能有创生牌）
+    public int RunCount = 0;//回合计数器
+    public GameObject TargetCard;//被选择的卡牌（作为目标）
+    private bool ChooseCardMode;//选牌模式
     // 自定义连携规则类（存储“目标组合”和“对应效果”）
     public class ComboRule
     {
@@ -77,13 +83,6 @@ public class BattleManager : MonoSingleton<BattleManager>
             Use = maxuse;
         }
     }
-    [Header("其它")]
-    public GamePhase GamePhase = GamePhase.gameStart;//战斗阶段枚举
-    public UnityEvent phaseChangeEvent = new UnityEvent();//创建阶段切换事件
-    public int HandCount = 0;//手牌数量（目前只有三种变化途径：抽牌、弃牌、打牌，后续可能有创生牌）
-    public GameObject TargetCard;//被选择的卡牌（作为目标）
-    private bool ChooseCardMode;//选牌模式
-
 
     protected override void Awake() // 用 Awake() 初始化，比 OnEnable() 早，避免时机问题
     {
@@ -319,7 +318,34 @@ public class BattleManager : MonoSingleton<BattleManager>
     //玩家开始阶段2（此时阶段为playerWait）
     public void OnPlayerStart2()
     {
-        DrawCard(5);//抽取手牌
+        int draw = 5;//基础抽牌数
+        //判断是不是第一回合
+        if (RunCount == 0)
+        {
+            //遍历抽牌堆
+            for(int i = 0;i < DrawCardList.Count;i++)
+            {
+                //查找固有牌
+                if (DrawCardList[i].keep == 2)
+                {
+                    //在指定位置生成一张卡（游戏对象）
+                    GameObject card = Instantiate(cardPrefab, playerHand);
+                    //将card实例赋予游戏对象中的卡
+                    card.GetComponent<CardDisplay>().card = DrawCardList[i];
+                    //移出抽牌堆
+                    DrawCardList.RemoveAt(i);
+                    //手牌计数+1
+                    HandCount += 1;
+                    //抽牌数-1
+                    draw--;
+                }
+                //查看手牌是否满了
+                if (HandCount == 10) { break; }
+            }
+        }
+        if (draw < 0) { draw = 0; }
+        DrawCard(draw);//抽取手牌
+        RunCount++;
         NextPhase();//下一阶段
     }
 
@@ -368,7 +394,7 @@ public class BattleManager : MonoSingleton<BattleManager>
             //手牌计数+1
             HandCount += 1;
             //判断卡牌是否有出场效果
-            if (card.GetComponent<CardDisplay>().card.imprint == 1)
+            if (card.GetComponent<CardDisplay>().card.other == 1)
             {
                 //执行出场效果
                 cardEffect.EnterEffect(card.GetComponent<CardDisplay>().card, playerState);
@@ -408,7 +434,12 @@ public class BattleManager : MonoSingleton<BattleManager>
     //弃牌阶段
     public void Fold()
     {
-        // 关键：遍历前先创建子对象数组（避免遍历中删除子对象导致索引错乱）
+        //校对卡牌数量（调试用）
+        if (playerHand.childCount != HandCount)
+        {
+            Debug.Log("手牌计数有误！计数："+ HandCount + "实际："+ playerHand.childCount);
+        }
+        // 创建子对象临时数组
         Transform[] handCardTransforms = new Transform[playerHand.childCount];
         for (int i = 0; i < playerHand.childCount; i++)
         {
@@ -420,7 +451,11 @@ public class BattleManager : MonoSingleton<BattleManager>
         {
             //获取卡牌上的card实例
             Card _cardObj = cardTransform.GetComponent<CardDisplay>().card;
-
+            //判断是否有回合结束弃置效果
+            if (_cardObj.other == 3)
+            {
+                cardEffect.OverEffect(_cardObj, playerState);//执行回合结束弃置效果
+            }
             if (_cardObj.keep == 1)//如果卡牌是虚无
             { ConsumeList.Add(_cardObj); }//放入消耗牌堆
             else if (_cardObj.keep == 2)//如果卡牌是保留

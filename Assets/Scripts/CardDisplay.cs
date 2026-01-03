@@ -39,7 +39,7 @@ public class CardDisplay : MonoBehaviour
     //将类中的卡片信息呈现到UI上
     public void ShowCard()
     {
-        //部分消耗为X的牌特殊处理
+        //显示费用，部分消耗为X的牌特殊处理
         if (999 == card.spend)
         {
             spendText.text = "X";
@@ -48,7 +48,8 @@ public class CardDisplay : MonoBehaviour
         {
             spendText.text = card.spend.ToString();
         }
-        effectText.text = effect;
+        
+        //显示升级
         if (card.upgrade)
         {
             nameText.text = (card.cardName + "+");
@@ -221,6 +222,34 @@ public class CardDisplay : MonoBehaviour
             case 1027:
                 effect = "造成" + card.attack + "点伤害\n施加" + card.electricity + "点雷电\n消耗";
                 break;
+            case 28://燃烧之手
+                effect = "获得3点火焰附加";
+                break;
+            case 1028:
+                effect = "获得4点火焰附加";
+                break;
+            case 29://喷火
+            case 1029:
+                effect = "对敌方全体施加" + card.fire + "点燃烧";
+                break;
+            case 30://备用护盾
+            case 1030:
+                effect = "获得" + card.defense + "点格挡\n保留";
+                break;
+            case 31://完美弹反
+                effect = "正好格挡敌人攻击时，反弹等量的伤害";
+                break;
+            case 1031:
+                effect = "正好格挡敌人攻击时，反弹等量的伤害\n固有";
+                break;
+            case 32://钢筋铁骨
+                effect = "获得1层免疫";
+                break;
+            case 1032:
+                effect = "获得2层免疫";
+                break;
         }
+        //显示文本
+        effectText.text = effect;
     }
 }

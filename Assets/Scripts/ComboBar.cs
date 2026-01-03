@@ -52,20 +52,33 @@ public class ComboBar : MonoBehaviour
     //当收到出牌事件时
     public void SendCard1(int type)
     {
-        Debug.Log("收到信号："+ type);
+        //Debug.Log("收到信号："+ type);
         //如果连携没有走完
         if (ComboSch < 3)
         {
             //则比对是否符合连携数组
             if (type == ComboList[ComboSch] || type == 10)
             {
-                //推进连携进度
-                ComboStoneList[ComboSch].Fire.SetActive(true);
-                ComboSch++;
+                if (ComboStoneList[ComboSch] != null)
+                {
+                    //推进连携进度
+                    ComboStoneList[ComboSch].Fire.SetActive(true);
+                    ComboSch++;
+                } 
             }
             else
             {
                 Clear();//比对失败则清空连携进度
+                //清空后再尝试对比第一个
+                if (type == ComboList[ComboSch])
+                {
+                    if (ComboStoneList[ComboSch] != null)
+                    {
+                        //推进连携进度
+                        ComboStoneList[ComboSch].Fire.SetActive(true);
+                        ComboSch++;
+                    }
+                }
             }
         }
     }
@@ -75,7 +88,10 @@ public class ComboBar : MonoBehaviour
     {
         for(int i = 0;i < 3;i++)
         {
-            ComboStoneList[i].Fire.SetActive(false);
+            if (ComboStoneList[i] != null)
+            {
+                ComboStoneList[i].Fire.SetActive(false);
+            }
         }
         ComboSch = 0;
     }

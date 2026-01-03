@@ -165,9 +165,35 @@ public class CardEffect : MonoBehaviour
             case 27://脉冲拳
             case 1027:
                 break;
+            case 28://燃烧之手
+                playerState.GetFireAdd(3);
+                break;
+            case 1028:
+                playerState.GetFireAdd(4);
+                break;
+            case 29://喷火
+            case 1029:
+                break;
+            case 30://备用护盾
+            case 1030:
+                break;
+            case 31://完美弹反
+            case 1031:
+                playerState.beatBack += 1;
+                playerState.FreshState(6);
+                break;
+            case 32://钢筋铁骨
+                playerState.immune += 1;
+                playerState.FreshState(7);
+                break;
+            case 1032:
+                playerState.immune += 2;
+                playerState.FreshState(7);
+                break;
         }
     }
 
+    //需要提前发动的效果
     public void FrontEffect(Card attackCard, EnemyState enemyState, PlayerState playerState)
     {
         //发起剩余效果
@@ -185,11 +211,19 @@ public class CardEffect : MonoBehaviour
         }
     }
 
+    //抽到时效果
     public void EnterEffect(Card attackCard, PlayerState playerState)
     {
 
     }
 
+    //丢弃时效果
+    public void LoseEffect(Card attackCard, PlayerState playerState)
+    {
+
+    }
+
+    //回合结束丢弃效果
     public void OverEffect(Card attackCard, PlayerState playerState)
     {
 
@@ -228,10 +262,10 @@ public class CardEffect : MonoBehaviour
     {
         Card _cardObj = targetCard.GetComponent<CardDisplay>().card;//获取卡牌脚本
         //检测是否有主动弃置效果
-        if (_cardObj.imprint == 2)
+        if (_cardObj.other == 2)
         {
             //执行弃置效果
-            OverEffect(_cardObj, playerState);
+            LoseEffect(_cardObj, playerState);
         }
         BattleManager.ConsumeList.Add(_cardObj);//放入弃置牌堆
         Destroy(targetCard.gameObject);//销毁对象

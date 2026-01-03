@@ -213,7 +213,7 @@ MonoBehaviour:
   id: 0
   hp: 0
   maxhp: 0
-  life: 0
+  life: 1
   armor: 0
   strength: 0
   firm: 0
@@ -221,6 +221,13 @@ MonoBehaviour:
   toxin: 0
   electricity: 0
   fireAdd: 0
+  nameText: {fileID: 7079568992627730499}
+  hpText: {fileID: 7235016068363757568}
+  maxhpText: {fileID: 6138863953419568909}
+  armorText: {fileID: 2878447521714454636}
+  hpbar: {fileID: 8234098540873367417}
+  Image: {fileID: 2880002120232131871}
+  intent: {fileID: 36848972683059019}
   attack: 0
   defense: 0
   build: 0
@@ -229,14 +236,6 @@ MonoBehaviour:
   special2: 0
   special3: 0
   runningIntent: 1
-  nameText: {fileID: 7079568992627730499}
-  hpText: {fileID: 7235016068363757568}
-  maxhpText: {fileID: 6138863953419568909}
-  hpbar: {fileID: 8234098540873367417}
-  intent: {fileID: 36848972683059019}
-  armorText: {fileID: 2878447521714454636}
-  Image: {fileID: 2880002120232131871}
-  Target: {fileID: 0}
   State: {fileID: 1702126115376263056}
   State_Prefab: {fileID: 7215369755768263699, guid: 8f05410877a251c4db9a3ba69f39ecf6, type: 3}
   EffectPlace: {fileID: 3515200837920690290}
@@ -244,6 +243,7 @@ MonoBehaviour:
   ToxinAnim_Prefab: {fileID: 7324161858544213378, guid: 42e9d195e4c2a8f43973f025577e1665, type: 3}
   HurtAnim_Prefab: {fileID: 7324161858544213378, guid: 431c5f1ff3faaa8428459c0a3df1b79b, type: 3}
   DefAnim_Prefab: {fileID: 7324161858544213378, guid: e0845de4cc3e0784db08e93a0e448f7f, type: 3}
+  Target: {fileID: 0}
   choose: 0
   Acing: 0
 --- !u!222 &1808544525291475032

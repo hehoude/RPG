@@ -4597,7 +4597,7 @@ MonoBehaviour:
   id: 0
   hp: 0
   maxhp: 0
-  life: 0
+  life: 1
   armor: 0
   strength: 0
   firm: 0
@@ -4610,7 +4610,7 @@ MonoBehaviour:
   maxhpText: {fileID: 1359336423}
   armorText: {fileID: 126618622}
   hpbar: {fileID: 1756053958}
-  enemyImage: {fileID: 298473107}
+  Image: {fileID: 298473105}
   State: {fileID: 2045076029}
   State_Prefab: {fileID: 7215369755768263699, guid: 8f05410877a251c4db9a3ba69f39ecf6, type: 3}
   EffectPlace: {fileID: 641941159}

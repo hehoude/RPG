@@ -25,7 +25,7 @@ StartGameCanvas：打开其它场景
 1、在csv表格中添加
 2、在CardDisplay中添加介绍文本
 3、在PlayerData增加升级效果
-4、在BattleManager/CardEffect中的Attack函数添加卡牌效果
+4、在CardEffect中的Effect函数添加卡牌效果
 
 词条增加：
 1、在csv表格增加
@@ -50,7 +50,10 @@ X牌显示层在CardDisplay中有特殊处理
 5、在RoomDisplay的CreateEnemy中加入对应怪物
 
 状态增加：
-1、在StateDisplay中添加相应介绍文本
+1、状态图片放在state中，编号
+2、BattleState中刷新状态栏加入编号
+3、写入相关功能代码
+4、在StateDisplay中添加相应介绍文本
 
 
 
