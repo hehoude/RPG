@@ -1046,6 +1046,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3230941549899836003, guid: 58bb353f58a861544a8f030e0eacae76, type: 3}
+      propertyPath: mateData
+      value: 
+      objectReference: {fileID: 4900000, guid: ceb5f3edb98c7b24e9a489ee67ee69ab, type: 3}
     - target: {fileID: 6077804138772880935, guid: 58bb353f58a861544a8f030e0eacae76, type: 3}
       propertyPath: m_LocalPosition.x
       value: 827.9745
@@ -57709,6 +57713,7 @@ MonoBehaviour:
   mapWidth: 24
   mapHeight: 24
   ran: 2
+  noiseScale: 0.1
 --- !u!1 &951660928
 GameObject:
   m_ObjectHideFlags: 0

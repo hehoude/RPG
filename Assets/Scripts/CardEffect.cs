@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class CardEffect : MonoBehaviour
 {
@@ -80,10 +81,10 @@ public class CardEffect : MonoBehaviour
             case 1012:
                 break;
             case 13://以毒攻毒
-                playerState.GetToxin(3);
+                playerState.GetToxin(2);
                 break;
             case 1013:
-                playerState.GetToxin(4);
+                playerState.GetToxin(3);
                 break;
             case 14://瘟疫手雷
             case 1014:
@@ -190,6 +191,19 @@ public class CardEffect : MonoBehaviour
                 playerState.immune += 2;
                 playerState.FreshState(7);
                 break;
+            case 33://干电池
+            case 1033:
+                GetEnergy(1);
+                attackCard.spend += 1;
+                break;
+            case 34://石化药剂
+                playerState.protect += 1;
+                playerState.GetToxin(4);
+                break;
+            case 1034:
+                playerState.protect += 2;
+                playerState.GetToxin(5);
+                break;
         }
     }
 
@@ -276,6 +290,13 @@ public class CardEffect : MonoBehaviour
     public void Attack(int cardDamage, EnemyState enemyState)
     {
         BattleManager.Attack(cardDamage, enemyState);
+    }
+
+    //获得能量
+    public void GetEnergy(int count)
+    {
+        BattleManager.energy += count;
+        BattleManager.RefreshEnergy();//更新能量文本
     }
 
 }

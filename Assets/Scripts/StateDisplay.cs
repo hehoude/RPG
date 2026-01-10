@@ -95,6 +95,12 @@ public class StateDisplay : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             case 7://免疫
                 _text = "免疫\n受到伤害时，减少等同层数的伤害";
                 break;
+            case 8://防护
+                _text = "防护\n每层可以无视一次敌人攻击";
+                break;
+            case 9://虚弱
+                _text = "虚弱\n减少25%的攻击伤害";
+                break;
         }
         Tip.text = _text;//设置文本
     }

@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
-using System.IO;
 
 public class ChooseManager : MonoBehaviour
 {
@@ -20,6 +22,10 @@ public class ChooseManager : MonoBehaviour
     public Text BlockText1;
     public Text BlockText2;
     public Text BlockText3;
+    //随机三个队友ID
+    public int[] Mate_id;
+    //标志位：选择玩家角色还是队友
+    private bool role;
     [Header("管理器")]
     //public GameObject DataManager;//从数据管理器获取玩家数据
     private PlayerData PlayerData;
@@ -31,10 +37,23 @@ public class ChooseManager : MonoBehaviour
         PlayerData = PlayerData.Instance;
         CardStore = CardStore.Instance;
         Global_PlayerData = Global_PlayerData.Instance;
+        Mate_id = new int[3];
     }
     void Start()
     {
-        LoadStartList();//测试用，后续删掉
+        //根据当前层数判断
+        if (Global_PlayerData.Instance.floor == 0)
+        {
+            LoadStartList();//选择角色
+            role = true;
+        }
+        else
+        {
+            RandomMateId();//随机队友ID
+            ShowImages();//展示图片
+            ShowText();//展示介绍文本
+            role = false;
+        }
     }
 
     void Update()
@@ -105,14 +124,22 @@ public class ChooseManager : MonoBehaviour
         }
     }
 
-    //选择函数
+    //选择函数（由外部按钮调用）
     public void OnChoose(int choose)
     {
-        if (true)
+        if (role)
         {
             OnChooseCardList(choose);//加入卡组
             PlayerData.ComboList.Add(choose - 1);//加入连携
         }
+        else
+        {
+            int mateId = Mate_id[choose - 1];
+            PlayerData.MateList.Add(mateId);//加入队友
+            PlayerData.ComboList.Add(mateId + 10);//加入连携（队友连携为ID后推10位）
+            AddCardList(mateId);//加入卡组
+        }
+        FinishChoose();//完成并离开
     }
 
     //选择卡组
@@ -140,8 +167,6 @@ public class ChooseManager : MonoBehaviour
             Debug.Log("无效选择，未选择任何角色。");
         }
         PlayerData.AddPlayerCardList(cardList);
-
-        FinishChoose();//完成并离开
     }
 
     //完成选择并离开
@@ -167,5 +192,101 @@ public class ChooseManager : MonoBehaviour
         SceneChanger.Instance.GetMajorCity();
     }
 
+    //随机三个队友ID（后续还需要修改，不能和已有的队友相同ID）
+    public void RandomMateId()
+    {
+        Mate_id[0] = Random.Range(0, CardStore.MateLists.Count);//随机队友1ID
+        Mate_id[1] = Random.Range(0, CardStore.MateLists.Count);//随机队友2ID
+        while (Mate_id[0] == Mate_id[1])//防止ID一致
+        {
+            Mate_id[1] = Random.Range(0, CardStore.MateLists.Count);
+        }
+        Mate_id[2] = Random.Range(0, CardStore.MateLists.Count);//随机队友3ID
+        while (Mate_id[0] == Mate_id[2] || Mate_id[1] == Mate_id[2])//防止ID一致
+        {
+            Mate_id[2] = Random.Range(0, CardStore.MateLists.Count);
+        }
+    }
+
+    //显示队友图片
+    public void ShowImages()
+    {
+        string imagePath1 = Application.dataPath + "/Image/Mate/" + Mate_id[0].ToString() + ".png";
+        string imagePath2 = Application.dataPath + "/Image/Mate/" + Mate_id[1].ToString() + ".png";
+        string imagePath3 = Application.dataPath + "/Image/Mate/" + Mate_id[2].ToString() + ".png";
+        //修改图片
+        ChooseImage(BlockImage1, imagePath1);
+        ChooseImage(BlockImage2, imagePath2);
+        ChooseImage(BlockImage3, imagePath3);
+    }
+
+    //显示介绍文本
+    public void ShowText()
+    {
+        //准备头文本
+        string text_head = "选择你的队友";
+        //准备介绍文本
+        string text1 = GetText(Mate_id[0]);
+        string text2 = GetText(Mate_id[1]);
+        string text3 = GetText(Mate_id[2]);
+
+        HeadText.text = text_head;
+        BlockText1.text = text1;
+        BlockText2.text = text2;
+        BlockText3.text = text3;
+    }
+
+    //根据队友ID返回介绍文本
+    public string GetText(int _id)
+    {
+        string text = "";
+        switch(_id)
+        {
+            case 0:
+                text = "火龙战士\n用强大的火焰焚烧一切！";
+                break;
+            case 1:
+                text = "巫毒猎手\n擅长用毒药耗尽对手的生命。";
+                break;
+            case 2:
+                text = "雷电守卫\n使用电的力量辅助作战。";
+                break;
+        }
+        return text;
+    }
+
+    //将CardStore的队友卡组加入到PlayerData中
+    public void AddCardList(int _id)
+    {
+        List<Card> MateCardList;
+        //根据队友数量判断要塞进哪张卡组里
+        if (PlayerData.MateList.Count == 1)
+        {
+            MateCardList = PlayerData.MateCardList0;
+        }
+        else if (PlayerData.MateList.Count == 2)
+        {
+            MateCardList = PlayerData.MateCardList1;
+        }
+        else if (PlayerData.MateList.Count == 3)
+        {
+            MateCardList = PlayerData.MateCardList2;
+        }
+        else if (PlayerData.MateList.Count == 4)
+        {
+            MateCardList = PlayerData.MateCardList3;
+        }
+        else
+        {
+            Debug.LogWarning("队友卡组配置错误!");
+            return;
+        }
+        //根据id在CardStore中获取相应卡组
+        foreach (int card_id in CardStore.MateLists[_id])
+        {
+            //根据ID复制Card实例，加入到卡组中
+            MateCardList.Add(CardStore.CopyCard(card_id));
+        }
+    }
 
 }

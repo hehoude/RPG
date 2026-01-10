@@ -265,31 +265,12 @@ public class BattleManager : MonoSingleton<BattleManager>
     {
         foreach (int com in PlayerData.ComboList)
         {
-            List<int> comboList;//预设连携数组（用于赋给指示条）
-            switch (com)
-            {
-                case 0://重装战士连携
-                    //在comboRules中创建连携规则
-                    comboRules.Add(new ComboRule(new int[] { 1, 1, 1 }, _ => TriggerRGBEffect(com), 1));
-                    comboList = new List<int>() { 1, 1, 1 };
-                    break;
-                case 1://刺客连携
-                    comboRules.Add(new ComboRule(new int[] { 2, 2, 2 }, _ => TriggerRGBEffect(com), 1));
-                    comboList = new List<int>() { 2, 2, 2 };
-                    break;
-                case 2://元素使连携
-                    comboRules.Add(new ComboRule(new int[] { 1, 2, 3 }, _ => TriggerRGBEffect(com), 1));
-                    comboList = new List<int>() { 1, 2, 3 };
-                    break;
-                default:
-                    comboList = new List<int>() { 1, 1, 1 };
-                    Debug.LogWarning("未知连携：" + com);
-                    break;
-            }
+            //添加连携规则
+            comboRules.Add(new ComboRule(ComboList.GetComboArray(com), _ => TriggerRGBEffect(com), 1));
             //在显示层创建连携可视化指示条
             GameObject _ComboBar = Instantiate(ComboBar_Prefab, ComboPlace.transform);
-            //赋予连携数组
-            _ComboBar.GetComponent<ComboBar>().ComboList = comboList;
+            //赋予连携序号
+            _ComboBar.GetComponent<ComboBar>().ComboType = com;
         }
     }
 
@@ -534,7 +515,7 @@ public class BattleManager : MonoSingleton<BattleManager>
                     {
                         for (int i = 0; i < RunCount; i++)
                         {
-                            Attack(_Card, block.GetComponent<Block>().obj);//发动卡牌效果
+                            Use_Card(_Card, block.GetComponent<Block>().obj);//发动卡牌效果
                         }
                     }
                 }
@@ -672,7 +653,7 @@ public class BattleManager : MonoSingleton<BattleManager>
         RefreshEnergy();
         for (int i = 0; i < RunCount; i++)
         {
-            Attack(runningCard, _target);//发动卡牌效果
+            Use_Card(runningCard, _target);//发动卡牌效果
         }
         //卡牌结算
         CardOver(runningCard);
@@ -710,7 +691,7 @@ public class BattleManager : MonoSingleton<BattleManager>
     }
 
     //卡牌效果执行
-    public void Attack(GameObject _Card, GameObject _target)
+    public void Use_Card(GameObject _Card, GameObject _target)
     {
         Card attackCard = _Card.GetComponent<CardDisplay>().card;
         //由于玩家只有一个，所有玩家类采用全局变量
@@ -750,7 +731,13 @@ public class BattleManager : MonoSingleton<BattleManager>
     //攻击函数（由于攻击会附带很多效果，故封装成专门函数）
     public void Attack(int cardDamage, EnemyState enemyState)
     {
-        enemyState.TakeDamage(cardDamage + playerState.strength);//卡牌面板伤害+玩家力量
+        int _damage = cardDamage + playerState.strength;
+        //虚弱结算
+        if (playerState.weak > 0)
+        {
+            _damage = (int)(_damage * 0.75);//避免隐式转换
+        }
+        enemyState.TakeDamage(_damage);//卡牌面板伤害+玩家力量
         //是否有火焰附加
         if (playerState.fireAdd > 0)
         {
@@ -823,6 +810,8 @@ public class BattleManager : MonoSingleton<BattleManager>
                 }
             }
         }
+        //此时一轮游戏完成，发送相应信号
+        Event.CallRoundEnd();
         //延迟0.5秒后进入下一阶段
         Invoke("NextPhase", 0.5f);
         //NextPhase();
@@ -897,7 +886,7 @@ public class BattleManager : MonoSingleton<BattleManager>
         }
     }
 
-    //连携触发函数
+    //连携触发函数（后续可以考虑迁移到其它脚本）
     public void TriggerRGBEffect(int id)
     {
         switch (id)
@@ -911,6 +900,15 @@ public class BattleManager : MonoSingleton<BattleManager>
             case 2://元素使
                 energy += 1;//获得1点能量
                 RefreshEnergy();//更新能量文本
+                break;
+            case 10://火龙战士
+                playerState.GetFireAdd(2);//获得2点火焰附加
+                break;
+            case 11://巫毒猎手
+                DrawCard(2);//抽两张牌
+                break;
+            case 12://雷电守卫
+                playerState.GetFirm(1);//获得1点坚固
                 break;
         }
                 

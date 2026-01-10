@@ -18,8 +18,11 @@ public class BattleState : MonoBehaviour
     public int toxin = 0;//毒素层数
     public int electricity = 0;//雷电层数
     public int fireAdd = 0;//火焰附加层数
+    [Header("其它状态")]
     public int beatBack = 0;//弹反层数
     public int immune = 0;//免疫层数
+    public int protect = 0;//防护层数
+    public int weak = 0;//虚弱层数
     [Header("UI")]
     public Text nameText;
     public Text hpText;
@@ -40,6 +43,11 @@ public class BattleState : MonoBehaviour
     [Header("标志位")]
     public bool Acing = false;//是否正在行动
 
+    void Start()
+    {
+        Event.RoundEnd += End_State;//订阅轮次结束事件
+    }
+
     //更新显示层
     public void Refresh()
     {
@@ -53,7 +61,16 @@ public class BattleState : MonoBehaviour
     {
         //记录初始生命
         int old_hp = hp;
-        TakeDamage(damage);//执行伤害
+        //消耗防护层数避免结算伤害
+        if (protect > 0)
+        {
+            protect -= 1;
+            FreshState(8);
+        }
+        else
+        {
+            TakeDamage(damage);//执行伤害
+        }
         //检测弹反条件（仅玩家有弹反机制）
         if (beatBack>0 && old_hp == hp && armor == 0 && this is PlayerState)
         {
@@ -219,6 +236,12 @@ public class BattleState : MonoBehaviour
             case 7://免疫
                 state_Count = immune;
                 break;
+            case 8://防护
+                state_Count = protect;
+                break;
+            case 9://虚弱
+                state_Count = weak;
+                break;
             default://传入未知变量则用默认值
                 //state_Count = strength;
                 //state_Object = ref Strength_State;
@@ -266,6 +289,16 @@ public class BattleState : MonoBehaviour
         StateDisplay stateDisplay = NewState.GetComponent<StateDisplay>();//获取脚本
         stateDisplay.id = _state;//赋予状态id
         return NewState;
+    }
+
+    //每轮结束时，部分状态会刷新,调用这个函数（用信号调用）
+    public void End_State()
+    {
+        if (weak > 0)//虚弱层数
+        {
+            weak--;
+            FreshState(9);
+        }
     }
 
 }

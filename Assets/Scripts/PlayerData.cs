@@ -30,6 +30,7 @@ public class PlayerData : MonoSingleton<PlayerData>
         Global_PlayerData = Global_PlayerData.Instance;
         //核心数据加载提前（确保不被MapManager抢先加载）
         CardStore.LoadCardData();//调用商店脚本加载所有卡牌数据
+        CardStore.LoadMateList();//加载队友卡牌数据
         LoadPlayerData();//加载玩家数据
     }
     void Start()
@@ -261,6 +262,7 @@ public class PlayerData : MonoSingleton<PlayerData>
     //将指定容器的卡组保存到指定路径
     public void SaveCardList(string path, List<Card> _CardList)
     {
+        //将ID和升级状况储存
         List<string> deckDatas = new List<string>();
         for (int i = 0; i < _CardList.Count; i++)
         {
@@ -363,6 +365,11 @@ public class PlayerData : MonoSingleton<PlayerData>
                 _card.keep = 2;
                 break;
             case 32://钢筋铁骨
+                break;
+            case 33://干电池
+                _card.defense += 3;
+                break;
+            case 34://石化药剂
                 break;
         }
         return _card;

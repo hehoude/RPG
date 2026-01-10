@@ -10,14 +10,17 @@ using UnityEngine.UI;
 //public class CardStore : MonoBehaviour
 public class CardStore : MonoSingleton<CardStore>
 {
-    //使用TextAsset方法读取文本，将目标文本拖到插槽即可
-    public TextAsset cardData;
+    //使用TextAsset方法读取文本，将目标文本拖到插槽即可（只读文档尽量可以使用这种方法）
+    public TextAsset cardData;//卡牌文档
+    public TextAsset mateData;//队友文档
     //创建最终存放卡牌的容器
     public List<Card> cardList = new List<Card>();
     //创建各稀有度卡牌的id容器
     public List<int> White_Cards;
     public List<int> Blue_Cards;
     public List<int> Gold_Cards;
+    //存放所有队友的卡组容器的容器
+    public List<List<int>> MateLists;
     // Start is called before the first frame update
     void Start()
     {
@@ -91,6 +94,53 @@ public class CardStore : MonoSingleton<CardStore>
             }
         }
         Debug.Log("所有卡牌预加载完成");
+    }
+
+    //加载队友卡组数据表
+    public void LoadMateList()
+    {
+        //初始化容器（之所以没有放到Awake，因为这个函数会在PlayerData的Awake中调用，可能出现次序问题）
+        MateLists = new List<List<int>>();
+        string[] datarow = mateData.text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (var row in datarow)//遍历元素
+        {
+            string[] rowArray = row.Split(',');//再创建字符串数组，指定逗号为分隔符
+            if (rowArray[0] == "#")//第一个为#忽略
+            {
+                continue;
+            }
+            else if (string.IsNullOrEmpty(rowArray[0]))
+            {
+                break; // 终止循环，不再继续读取后续行
+            }
+            else if (rowArray[0] == "teammate")
+            {
+                if (rowArray.Length < 3)
+                {
+                    Debug.LogWarning($"行数据不完整，跳过此行：{row}");
+                    continue;
+                }
+
+                try
+                {
+                    List<int> currentRowCards = new List<int>();
+                    for (int i = 2; i < rowArray.Length; i++)
+                    {
+                        if (string.IsNullOrWhiteSpace(rowArray[i]))
+                            continue;
+                        currentRowCards.Add(int.Parse(rowArray[i]));
+                    }
+
+                    MateLists.Add(currentRowCards);
+                }
+                catch (FormatException ex)
+                {
+                    // 错误级别日志（红色）
+                    Debug.LogError($"行数据格式错误，跳过此行：{row}，错误：{ex.Message}");
+                }
+            }
+        }
+        Debug.Log("所有队友预加载完成");
     }
 
     public void TestLoad()

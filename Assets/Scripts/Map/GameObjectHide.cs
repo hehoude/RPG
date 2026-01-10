@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 public class GameObjectHide : MonoBehaviour
 {
     public Tilemap map;
+    //地图颜色隐藏脚本，玩家进入时修改透明度
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.tag == "Player")

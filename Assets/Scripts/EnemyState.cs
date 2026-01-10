@@ -292,8 +292,14 @@ public class EnemyState : BattleState, IPointerDownHandler
     public void EnemyAttack(int damage, PlayerState target)
     {
         int hurt = damage + strength;//基础数值+力量
-        if (hurt > 0)//大于零才会打出伤害
+
+        if (hurt >= 0)//大于等于零才会打出伤害
         {
+            //虚弱结算
+            if (weak > 0)
+            {
+                hurt = (int)(hurt * 0.75);//避免隐式转换
+            }
             //造成伤害（自身为伤害来源）
             target.TakeDamage(hurt, this);
             //是否有火焰附加

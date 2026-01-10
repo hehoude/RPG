@@ -25,7 +25,7 @@ public static class Event
 
     //战斗管理器发出的出牌属性信号
     public static event Action<int> SendCard;
-    public static void CallSendCard(int type)
+    public static void CallSendCard(int type)//调用这个函数以触发事件
     {
         SendCard?.Invoke(type);//将参数type传递给所有注册的函数
     }
@@ -35,6 +35,13 @@ public static class Event
     public static void CallTurnEnd()
     {
         TurnEnd?.Invoke();
+    }
+
+    //轮次结束事件
+    public static event Action RoundEnd;
+    public static void CallRoundEnd()
+    {
+        RoundEnd?.Invoke();
     }
 
 }

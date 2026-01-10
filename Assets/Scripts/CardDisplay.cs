@@ -70,8 +70,8 @@ public class CardDisplay : MonoBehaviour
                 spendText.color = Color.blue;
                 break;
             case 3://电
-                stone.color = Color.yellow;
-                spendText.color = Color.blue;
+                stone.color = Color.blue;
+                spendText.color = Color.yellow;
                 break;
             default:
                 stone.color = Color.white;
@@ -149,10 +149,10 @@ public class CardDisplay : MonoBehaviour
                 effect = "造成" + card.attack + "点伤害，施加" + card.toxin + "点中毒";
                 break;
             case 13://以毒攻毒
-                effect = "施加" + card.toxin + "点中毒，自己受到3点中毒";
+                effect = "施加" + card.toxin + "点中毒，自己受到2点中毒";
                 break;
             case 1013:
-                effect = "施加" + card.toxin + "点中毒，自己受到4点中毒";
+                effect = "施加" + card.toxin + "点中毒，自己受到3点中毒";
                 break;
             case 14://瘟疫手雷
             case 1014:
@@ -247,6 +247,16 @@ public class CardDisplay : MonoBehaviour
                 break;
             case 1032:
                 effect = "获得2层免疫";
+                break;
+            case 33://干电池
+            case 1033:
+                effect = "获得" + card.defense + "点格挡\n获得1点能量\n每次使用消耗+1";
+                break;
+            case 34://石化药剂
+                effect = "获得1层免疫，4层中毒";
+                break;
+            case 1034:
+                effect = "获得2层免疫，5层中毒";
                 break;
         }
         //显示文本

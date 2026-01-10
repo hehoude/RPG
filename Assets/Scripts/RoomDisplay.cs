@@ -34,8 +34,8 @@ public class RoomDisplay : MonoBehaviour
             Debug.LogError("房间数据未设置，无法生成资源点");
         }
         ShowRoom();//生成房间资源（游戏开始只能执行一次，后续不可再重复执行）
-        //判断房间是否为支线房间，支线房间如有怪物需要隐藏资源
-        if (!room.MainRoom && !room.Clear)
+        //判断房间是否为支线房间或最终房间，如有怪物需要隐藏资源
+        if ((!room.MainRoom || room.roomPos.x == 5) && !room.Clear)
         {
             SourceSetActive(false);
         }

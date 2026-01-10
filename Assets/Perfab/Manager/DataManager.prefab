@@ -45,10 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 548bfeb0e42dbb242a02ece4c43eabae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Coins: 0
-  playerData: {fileID: 4900000, guid: abb13db28e3a3444e85072f90d9e27c1, type: 3}
-  CardObject: {fileID: 0}
-  CardStore: {fileID: 3230941549899836003}
+  MateList: 
+  ComboList: 
 --- !u!114 &3230941549899836003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,3 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardData: {fileID: 4900000, guid: 5f17c3e27df4c6b4bb30207725f7a913, type: 3}
+  mateData: {fileID: 4900000, guid: ceb5f3edb98c7b24e9a489ee67ee69ab, type: 3}
+  White_Cards: 
+  Blue_Cards: 
+  Gold_Cards: 

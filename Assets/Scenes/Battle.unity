@@ -3751,6 +3751,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   HandCount: 0
+  RunCount: 0
   TargetCard: {fileID: 0}
 --- !u!4 &1651878716
 Transform:
@@ -4605,6 +4606,10 @@ MonoBehaviour:
   toxin: 0
   electricity: 0
   fireAdd: 0
+  beatBack: 0
+  immune: 0
+  protect: 0
+  weak: 0
   nameText: {fileID: 626887888}
   hpText: {fileID: 1756812588}
   maxhpText: {fileID: 1359336423}
@@ -4618,6 +4623,7 @@ MonoBehaviour:
   ToxinAnim_Prefab: {fileID: 7324161858544213378, guid: 42e9d195e4c2a8f43973f025577e1665, type: 3}
   HurtAnim_Prefab: {fileID: 7324161858544213378, guid: 431c5f1ff3faaa8428459c0a3df1b79b, type: 3}
   DefAnim_Prefab: {fileID: 7324161858544213378, guid: e0845de4cc3e0784db08e93a0e448f7f, type: 3}
+  Acing: 0
 --- !u!1 &1983498407
 GameObject:
   m_ObjectHideFlags: 0

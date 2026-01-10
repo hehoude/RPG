@@ -634,6 +634,10 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
             {
                 //Debug.Log("主线房间已清空");
                 ProgressGame();//主线房间被清空则推进游戏进程
+                if (room.GetComponent<RoomDisplay>().room.roomPos.x == 5)
+                {
+                    room.GetComponent<RoomDisplay>().SourceSetActive(true);//最终房间显示传送门
+                }
             }
             else
             {
