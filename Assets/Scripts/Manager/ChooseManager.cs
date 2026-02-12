@@ -22,6 +22,12 @@ public class ChooseManager : MonoBehaviour
     public Text BlockText1;
     public Text BlockText2;
     public Text BlockText3;
+    //连携条预制体
+    public GameObject ComboBar_Prefab;
+    //获取三个连携条
+    public GameObject ComboBar1;
+    public GameObject ComboBar2;
+    public GameObject ComboBar3;
     //随机三个队友ID
     public int[] Mate_id;
     //标志位：选择玩家角色还是队友
@@ -52,6 +58,7 @@ public class ChooseManager : MonoBehaviour
             RandomMateId();//随机队友ID
             ShowImages();//展示图片
             ShowText();//展示介绍文本
+            MateComboBar();//展示连携条
             role = false;
         }
     }
@@ -85,6 +92,10 @@ public class ChooseManager : MonoBehaviour
         BlockText1.text = text_Armour;
         BlockText2.text = text_Assassin;
         BlockText3.text = text_Element;
+        //创建连携条
+        CreateComboBar(0, ComboBar1);
+        CreateComboBar(1, ComboBar2);
+        CreateComboBar(2, ComboBar3);
     }
 
     //替换图片
@@ -236,6 +247,16 @@ public class ChooseManager : MonoBehaviour
         BlockText3.text = text3;
     }
 
+    //显示队友连携条
+    public void MateComboBar()
+    {
+        //创建连携条（队友连携条为ID后推10位）
+        CreateComboBar(Mate_id[0]+10, ComboBar1);
+        CreateComboBar(Mate_id[1]+10, ComboBar2);
+        CreateComboBar(Mate_id[2]+10, ComboBar3);
+        
+    }
+
     //根据队友ID返回介绍文本
     public string GetText(int _id)
     {
@@ -287,6 +308,15 @@ public class ChooseManager : MonoBehaviour
             //根据ID复制Card实例，加入到卡组中
             MateCardList.Add(CardStore.CopyCard(card_id));
         }
+    }
+
+    //创建连携条
+    public void CreateComboBar(int com, GameObject ComboPlace)
+    {
+        //在显示层创建连携可视化指示条
+        GameObject _ComboBar = Instantiate(ComboBar_Prefab, ComboPlace.transform);
+        //赋予连携序号
+        _ComboBar.GetComponent<ComboBar>().ComboType = com;
     }
 
 }
