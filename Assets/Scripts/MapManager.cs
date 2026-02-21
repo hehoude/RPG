@@ -497,7 +497,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
     //保存资源数据到csv表格
     public void SaveSourceData()
     {
-        string path = Application.dataPath + "/Datas/MapSource.csv";
+        string path = Application.dataPath + "/Datas/Save/MapSource.csv";
         //预存到datas里
         List<string> datas = new List<string>();
         //遍历每个房间的source数据
@@ -520,7 +520,7 @@ public class MapManager : MonoSingleton<MapManager>//单例后更容易访问
     //加载资源数据
     public void LoadSourceData()
     {
-        string fullPath = Application.dataPath + "/Datas/MapSource.csv";
+        string fullPath = Application.dataPath + "/Datas/Save/MapSource.csv";
         //清空字典
         roomSourceData.Clear();
         //读取所有行

@@ -14,6 +14,7 @@ public class StartGameCanvas : MonoBehaviour
         //PlayerData = DataManager.GetComponent<PlayerData>();
     }
 
+    //重新开始经典模式
     public void StartGameButton()
     {
         //执行数据重置函数（不必调用PlayerData）
@@ -25,10 +26,17 @@ public class StartGameCanvas : MonoBehaviour
     {
         Application.Quit();
     }
+    //继续经典模式
     public void LoadGameButton()
     {
         Global_PlayerData.Instance.newGame = false;
         SceneManager.LoadScene(1);
+    }
+
+    //开启战役模式
+    public void StartWar()
+    {
+        SceneManager.LoadScene(9);//打开序号为9的场景
     }
 
 
@@ -38,16 +46,16 @@ public class StartGameCanvas : MonoBehaviour
         string originalPath;
         string backupPath;
         //重置PlayerData.csv
-        originalPath = Application.dataPath + "/Datas/PlayerData.csv";
+        originalPath = Application.dataPath + "/Datas/Save/PlayerData.csv";
         backupPath = Application.dataPath + "/Datas/Normal/PlayerData.csv";
         ResetPlayerData(originalPath, backupPath);
         //清空玩家卡组
-        ClearCsvFile(Application.dataPath + "/Datas/PlayerCard.csv");
+        ClearCsvFile(Application.dataPath + "/Datas/Save/PlayerCard.csv");
         //清空同伴卡组
-        ClearCsvFile(Application.dataPath + "/Datas/MateCard0.csv");
-        ClearCsvFile(Application.dataPath + "/Datas/MateCard1.csv");
-        ClearCsvFile(Application.dataPath + "/Datas/MateCard2.csv");
-        ClearCsvFile(Application.dataPath + "/Datas/MateCard3.csv");
+        ClearCsvFile(Application.dataPath + "/Datas/Save/MateCard0.csv");
+        ClearCsvFile(Application.dataPath + "/Datas/Save/MateCard1.csv");
+        ClearCsvFile(Application.dataPath + "/Datas/Save/MateCard2.csv");
+        ClearCsvFile(Application.dataPath + "/Datas/Save/MateCard3.csv");
         Debug.Log("玩家数据已重置为默认状态。");
     }
 

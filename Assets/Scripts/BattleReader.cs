@@ -19,7 +19,7 @@ public class BattleReader : MonoBehaviour
     {
         enemies.Clear();//清理容器
         //读取路径
-        string fullPath = Application.dataPath + "/Datas/BattleMessage.csv";
+        string fullPath = Application.dataPath + "/Datas/Save/BattleMessage.csv";
         //转换为字符串
         string fileContent = File.ReadAllText(fullPath, System.Text.Encoding.UTF8);
         //拆分

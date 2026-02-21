@@ -57,7 +57,7 @@ public class PlayerData : MonoSingleton<PlayerData>
     //加载玩家基础数据
     public void LoadBaseData()
     {
-        string fullPath = Application.dataPath + "/Datas/PlayerData.csv";//读取路径
+        string fullPath = Application.dataPath + "/Datas/Save/PlayerData.csv";//读取路径
         string fileContent = File.ReadAllText(fullPath, System.Text.Encoding.UTF8);//转换为字符串
         string[] dataRow = fileContent.Split('\n');//拆分
         //string[] dataRow = playerData.text.Split('\n');原有读写存在bug，弃用改为位置读写
@@ -126,26 +126,26 @@ public class PlayerData : MonoSingleton<PlayerData>
     //加载玩家与队友的卡组
     public void LoadCardData()
     {
-        string fullPath = Application.dataPath + "/Datas/PlayerCard.csv";//读取路径
+        string fullPath = Application.dataPath + "/Datas/Save/PlayerCard.csv";//读取路径
         LoadCardList(fullPath, PlayerCardList);//加载玩家卡组
         if (MateList.Count > 0)
         {
-            fullPath = Application.dataPath + "/Datas/MateCard0.csv";
+            fullPath = Application.dataPath + "/Datas/Save/MateCard0.csv";
             LoadCardList(fullPath, MateCardList0);
         }
         if (MateList.Count > 1)
         {
-            fullPath = Application.dataPath + "/Datas/MateCard1.csv";
+            fullPath = Application.dataPath + "/Datas/Save/MateCard1.csv";
             LoadCardList(fullPath, MateCardList1);
         }
         if (MateList.Count > 2)
         {
-            fullPath = Application.dataPath + "/Datas/MateCard2.csv";
+            fullPath = Application.dataPath + "/Datas/Save/MateCard2.csv";
             LoadCardList(fullPath, MateCardList2);
         }
         if (MateList.Count > 3)
         {
-            fullPath = Application.dataPath + "/Datas/MateCard3.csv";
+            fullPath = Application.dataPath + "/Datas/Save/MateCard3.csv";
             LoadCardList(fullPath, MateCardList3);
         }
         //最多支持4名队友
@@ -196,7 +196,7 @@ public class PlayerData : MonoSingleton<PlayerData>
     //保存基础数据
     public void SaveBaseData()
     {
-        string path = Application.dataPath + "/Datas/PlayerData.csv";
+        string path = Application.dataPath + "/Datas/Save/PlayerData.csv";
         //预存到datas里
         List<string> datas = new List<string>();
         //保存血量上限
@@ -235,26 +235,26 @@ public class PlayerData : MonoSingleton<PlayerData>
     //保存卡组数据
     public void SaveCardData()
     {
-        string path = Application.dataPath + "/Datas/PlayerCard.csv";
+        string path = Application.dataPath + "/Datas/Save/PlayerCard.csv";
         SaveCardList(path, PlayerCardList);
         if (MateList.Count > 0)
         {
-            path = Application.dataPath + "/Datas/MateCard0.csv";
+            path = Application.dataPath + "/Datas/Save/MateCard0.csv";
             SaveCardList(path, MateCardList0);
         }
         if (MateList.Count > 1)
         {
-            path = Application.dataPath + "/Datas/MateCard1.csv";
+            path = Application.dataPath + "/Datas/Save/MateCard1.csv";
             SaveCardList(path, MateCardList1);
         }
         if (MateList.Count > 2)
         {
-            path = Application.dataPath + "/Datas/MateCard2.csv";
+            path = Application.dataPath + "/Datas/Save/MateCard2.csv";
             SaveCardList(path, MateCardList2);
         }
         if (MateList.Count > 3)
         {
-            path = Application.dataPath + "/Datas/MateCard3.csv";
+            path = Application.dataPath + "/Datas/Save/MateCard3.csv";
             SaveCardList(path, MateCardList3);
         }
     }

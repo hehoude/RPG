@@ -43,7 +43,7 @@ public class EnterBattle : MonoBehaviour
     {
         // 定义保存路径
         string folderPath = Application.dataPath + "/Datas";
-        string filePath = folderPath + "/BattleMessage.csv";
+        string filePath = folderPath + "/Save/BattleMessage.csv";
 
         // 如果文件夹不存在，创建文件夹
         if (!Directory.Exists(folderPath))
