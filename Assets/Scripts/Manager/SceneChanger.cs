@@ -5,18 +5,29 @@ using UnityEngine.SceneManagement;
 
 public class SceneChanger : MonoSingleton<SceneChanger>
 {
+    private int CleanMap = 999;//待卸载的场景编号
+    //****************************从临时场景切换回主场景的方法*************************
+    public void GetMajorCity(int ClearMap)
+    {
+        //预约卸载场景
+        CleanMap = ClearMap;
+        //继续原有逻辑
+        GetMajorCity();
+    }
     public void GetMajorCity()
     {
+        //获取当前地图ID
+        int CurrentMap = Global_PlayerData.Instance.Map;
         //SceneManager.LoadScene(0);//打开序号为0的场景（默认销毁其它场景）
-        LoadSceneAdditive(1);
-        ResumeTargetScene(1); //恢复主城场景
-        UnloadScene(2);
-        UnloadScene(3);
-        UnloadScene(4);
-        UnloadScene(5);
-        UnloadScene(6);
-        UnloadScene(7);
-        UnloadScene(8);
+        LoadSceneAdditive(CurrentMap);//加载地图
+        ResumeTargetScene(CurrentMap);//解除场景暂停
+        //卸载不用的场景
+        if (CleanMap < 999)
+        {
+            UnloadScene(CleanMap);
+            CleanMap = 999;
+        }
+        //卸载部分管理器（否则进入相同场景时，这些管理器无法执行Start方法）
         var battleManager = BattleManager.FindInstance();
         if (battleManager != null)
         {
@@ -37,41 +48,85 @@ public class SceneChanger : MonoSingleton<SceneChanger>
         }
 
     }
+    //****************************临时场景打开方法********************************
     public void GetBattle()
     {
-        PauseTargetScene(1);//暂停主城场景
+        PauseTargetScene(Global_PlayerData.Instance.Map);//暂停地图场景
         LoadSceneAdditive(2);//打开序号为2的场景
     }
     public void GetFire()
     {
-        PauseTargetScene(1);
+        PauseTargetScene(Global_PlayerData.Instance.Map);
         LoadSceneAdditive(3);
     }
     public void GetDelete()
     {
-        PauseTargetScene(1);
+        PauseTargetScene(Global_PlayerData.Instance.Map);
         LoadSceneAdditive(4);
     }
     public void GetShop()
     {
-        PauseTargetScene(1);
+        PauseTargetScene(Global_PlayerData.Instance.Map);
         LoadSceneAdditive(5);
     }
     public void GetBag()
     {
-        PauseTargetScene(1);
+        PauseTargetScene(Global_PlayerData.Instance.Map);
         LoadSceneAdditive(6);
     }
     public void GetChoose()
     {
-        PauseTargetScene(1);
+        PauseTargetScene(Global_PlayerData.Instance.Map);
         LoadSceneAdditive(7);
     }
 
     public void GetBox()
     {
-        PauseTargetScene(1);
+        PauseTargetScene(Global_PlayerData.Instance.Map);
         LoadSceneAdditive(8);
+    }
+
+    //*****************************主场景切换方法*****************************
+    public void ChangeMainScene(int oldScene, int newScene)
+    {
+        // 启动协程处理场景切换，保证时序正确
+        StartCoroutine(ChangeMainSceneCoroutine(oldScene, newScene));
+    }
+
+    // 用协程处理场景切换
+    private IEnumerator ChangeMainSceneCoroutine(int oldScene, int newScene)
+    {
+        //叠加加载新场景
+        Scene targetScene = SceneManager.GetSceneByBuildIndex(newScene);
+        if (!targetScene.isLoaded)
+        {
+            // 加载新场景（叠加模式）
+            AsyncOperation loadOp = SceneManager.LoadSceneAsync(newScene, LoadSceneMode.Additive);
+            // 等待加载完成
+            yield return loadOp;
+        }
+
+        //激活新场景
+        targetScene = SceneManager.GetSceneByBuildIndex(newScene);
+        if (targetScene.isLoaded)
+        {
+            SceneManager.SetActiveScene(targetScene);
+        }
+        else
+        {
+            Debug.LogError($"新场景 {newScene} 加载失败，无法切换");
+            yield break;
+        }
+
+        //异步卸载老场景
+        Scene sceneToUnload = SceneManager.GetSceneByBuildIndex(oldScene);
+        if (sceneToUnload.isLoaded)
+        {
+            AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(sceneToUnload);
+            // 等待卸载完成
+            yield return unloadOp;
+            //Debug.Log($"老场景 {oldScene} 已成功卸载");
+        }
     }
 
     public void BackManage()//返回主菜单
@@ -84,7 +139,11 @@ public class SceneChanger : MonoSingleton<SceneChanger>
         //Debug.Log("成功退出");
     }
 
-    // 通用叠加加载方法（核心逻辑）
+
+    //***********************************执行函数******************************************
+
+
+    // 叠加加载场景（如目标场景存在，则直接打开，不重新加载）
     private void LoadSceneAdditive(int sceneIndex)
     {
         // 1. 检查场景是否已加载（避免重复加载）
@@ -115,7 +174,7 @@ public class SceneChanger : MonoSingleton<SceneChanger>
         SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(sceneIndex));
     }
 
-    //卸载指定场景（如需清理不再需要的场景）
+    //卸载指定场景
     public void UnloadScene(int sceneIndex)
     {
         Scene sceneToUnload = SceneManager.GetSceneByBuildIndex(sceneIndex);

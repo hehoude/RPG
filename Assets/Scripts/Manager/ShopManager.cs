@@ -179,7 +179,7 @@ public class ShopManager : MonoSingleton<ShopManager>
     {
         if (!stop)
         {
-            SceneChanger.Instance.GetMajorCity();
+            SceneChanger.Instance.GetMajorCity(5);
         }
     }
 

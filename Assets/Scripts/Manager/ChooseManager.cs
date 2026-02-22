@@ -200,7 +200,7 @@ public class ChooseManager : MonoBehaviour
     //退出按钮
     public void Exit()
     {
-        SceneChanger.Instance.GetMajorCity();
+        SceneChanger.Instance.GetMajorCity(7);
     }
 
     //随机三个队友ID（后续还需要修改，不能和已有的队友相同ID）

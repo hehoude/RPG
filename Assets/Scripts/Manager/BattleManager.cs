@@ -840,8 +840,8 @@ public class BattleManager : MonoSingleton<BattleManager>
                 MapManager.Instance.RoomClean();
             }
             else { Debug.Log("错误：没找到地图管理器"); }
-            //调用SceneChanger切回主城
-            SceneChanger.Instance.GetMajorCity();
+            //调用SceneChanger切回主城，并卸载自身场景
+            SceneChanger.Instance.GetMajorCity(2);
         }
         else if (!playerState.life)
         {

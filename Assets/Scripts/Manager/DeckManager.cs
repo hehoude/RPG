@@ -130,7 +130,7 @@ public class DeckManager : MonoBehaviour
     //退出按钮
     public void Exit()
     {
-        SceneChanger.Instance.GetMajorCity();
+        SceneChanger.Instance.GetMajorCity(6);
     }
 
 

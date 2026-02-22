@@ -19,7 +19,8 @@ public class StartGameCanvas : MonoBehaviour
     {
         //执行数据重置函数（不必调用PlayerData）
         ResetPlayerData();
-        Global_PlayerData.Instance.newGame = true;
+        Global_PlayerData.Instance.newGame = true;//告知全局数据这是新开游戏
+        Global_PlayerData.Instance.Map = 1;//切换当前所处地图标志位
         SceneManager.LoadScene(1);//打开序号为1的场景
     }
     public void QuitGameButton()
@@ -29,14 +30,23 @@ public class StartGameCanvas : MonoBehaviour
     //继续经典模式
     public void LoadGameButton()
     {
-        Global_PlayerData.Instance.newGame = false;
+        Global_PlayerData.Instance.newGame = false;//告知全局数据这是载入游戏
+        Global_PlayerData.Instance.Map = 1;//切换当前所处地图标志位
         SceneManager.LoadScene(1);
     }
 
     //开启战役模式
     public void StartWar()
     {
+        Global_PlayerData.Instance.Map = 9;//切换当前所处地图标志位
         SceneManager.LoadScene(9);//打开序号为9的场景
+    }
+
+    //开启战役模式测试
+    public void StartWarTest()
+    {
+        Global_PlayerData.Instance.Map = 10;//切换当前所处地图标志位
+        SceneManager.LoadScene(10);//打开序号为10的场景
     }
 
 
