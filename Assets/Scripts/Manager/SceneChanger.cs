@@ -46,6 +46,12 @@ public class SceneChanger : MonoSingleton<SceneChanger>
             shopManager.UnloadSingleton();
             Debug.Log("商店管理器单例已卸载");
         }
+        var chatManager = ChatManager.FindInstance();
+        if (chatManager != null)
+        {
+            chatManager.UnloadSingleton();
+            Debug.Log("对话管理器单例已卸载");
+        }
 
     }
     //****************************临时场景打开方法********************************
@@ -185,7 +191,7 @@ public class SceneChanger : MonoSingleton<SceneChanger>
     }
 
     // 暂停指定场景（仅修改标记，不影响全局时间）
-    private void PauseTargetScene(int sceneIndex)
+    public void PauseTargetScene(int sceneIndex)
     {
         //1号场景（主地图）存在时才会暂停，主城（调试用）不会
         Scene scene = SceneManager.GetSceneByBuildIndex(sceneIndex);

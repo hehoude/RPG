@@ -1,0 +1,16 @@
+{
+    "dialogues": [
+        {
+            "speakerName": "小明",
+            "message": "你好！欢迎来到这个游戏。"
+        },
+        {
+            "speakerName": "小红",
+            "message": "谢谢你的欢迎，这里真有趣。"
+        },
+        {
+            "speakerName": "小明",
+            "message": "不客气，希望你玩得开心！"
+        }
+    ]
+}

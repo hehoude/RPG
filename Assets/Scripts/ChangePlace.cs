@@ -21,7 +21,7 @@ public class ChangePlace : MonoBehaviour
             Global_PlayerData.Instance.place = place;
             //切换全局变量中玩家地图ID
             Global_PlayerData.Instance.Map = newScene;
-            //执行场景切换
+            //执行场景切换（这里很奇怪，场景中不用拖入SceneChanger单例也能正常执行）
             SceneChanger.Instance.ChangeMainScene(oldScene, newScene);
         }
     }
