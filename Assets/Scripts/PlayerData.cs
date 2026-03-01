@@ -17,12 +17,13 @@ public class PlayerData : MonoSingleton<PlayerData>
     //public int maxhp;//玩家最大生命
     //public int hp;//玩家生命
     //public int id;//角色id
-    public List<int> MateList = new List<int>();//伙伴列表
+    public List<int> MateList = new List<int>();//队友列表
     public List<Card> MateCardList0 = new List<Card>();//队友0的卡组
     public List<Card> MateCardList1 = new List<Card>();//队友1的卡组
     public List<Card> MateCardList2 = new List<Card>();//队友2的卡组
     public List<Card> MateCardList3 = new List<Card>();//队友3的卡组
     public List<int> ComboList = new List<int>();//连携列表
+    public List<int> EquipList = new List<int>();//遗物列表
 
     protected override void Awake()
     {
@@ -129,6 +130,10 @@ public class PlayerData : MonoSingleton<PlayerData>
             else if (rowArray[0] == "combo")//连携
             {
                 ComboList.Add(int.Parse(rowArray[1]));//加入连携列表
+            }
+            else if (rowArray[0] == "equip")//遗物
+            {
+                EquipList.Add(int.Parse(rowArray[1]));//加入遗物列表
             }
         }
         //将坐标加载至全局变量（这几个_x,_y写到foreach外面才行呀，排了老半天问题才发现）
@@ -239,6 +244,11 @@ public class PlayerData : MonoSingleton<PlayerData>
         for (int i = 0; i < ComboList.Count; i++)
         {
             datas.Add("combo," + ComboList[i].ToString());
+        }
+        //保存遗物列表
+        for (int i = 0; i < EquipList.Count; i++)
+        {
+            datas.Add("equip," + EquipList[i].ToString());
         }
         //Debug.Log("玩家基础数据已保存");
         //保存数据

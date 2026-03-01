@@ -1,137 +1,193 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.Intrinsics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DeckManager : MonoBehaviour
 {
-    public Transform libraryPanel;//卡牌展示容器
+    public Transform libraryPanel;//卡牌/连携/遗物展示容器（已挂载GridLayoutGroup）
 
+    // 三类内容预制体
     public GameObject cardPrefab;//卡组卡
+    public GameObject comboPrefab;//连携
+    public GameObject equipPrefab;//遗物
 
-    //public GameObject DataManager;
     private PlayerData PlayerData;
-
     public ScrollRect cardScrollRect;//滚动条
-    public GameObject Button1;
-    public GameObject Button2;
-    public GameObject Button3;
-    public GameObject Button4;
+
+    // 布局配置：三类内容的单元格大小（可在Inspector面板调整）
+    [Header("布局配置")]
+    private Vector2 cardCellSize = new Vector2(300, 400);    // 卡牌单元格大小
+    private Vector2 comboCellSize = new Vector2(300, 60);     // 连携单元格大小
+    private Vector2 equipCellSize = new Vector2(120, 80);    // 遗物单元格大小
+
+    // 缓存Grid布局组件
+    private GridLayoutGroup gridLayout;
 
     void Awake()
     {
-        //从游戏对象DataManager处获取脚本
+        // 获取玩家数据
         PlayerData = PlayerData.Instance;
-        //这里获取脚本一定要趁早，如果放到Start中，会等到OnDataLoaded()生效后还没获取到脚本
+
+        // 获取已挂载的GridLayoutGroup组件
+        gridLayout = libraryPanel.GetComponent<GridLayoutGroup>();
     }
 
     void Start()
     {
-        UpdateDeck(0);
-        HideButton();
+        // 初始默认显示卡牌
+        ShowCards();
     }
 
-    void Update()
+    #region 显示切换方法（绑定到按钮）
+    /// <summary>
+    /// 显示卡牌（绑定到「卡牌」按钮）
+    /// </summary>
+    public void ShowCards()
     {
-        
-    }
-
-    //显示卡组中的卡
-    public void UpdateDeck(int _pile)
-    {
-        ClearAllCardsInLibrary();//清空界面的卡牌
-        switch (_pile)
+        // 1. 切换为卡牌布局
+        UpdateGridCellSize(cardCellSize);
+        // 2. 清空容器
+        ClearAllContentInLibrary();
+        // 3. 生成卡牌
+        for (int i = 0; i < PlayerData.PlayerCardList.Count; i++)
         {
-            case 0://玩家卡组
-                for (int i = 0; i < PlayerData.PlayerCardList.Count; i++)
-                {
-                    CreatCard(PlayerData.PlayerCardList[i]);
-                }
-                break;
-            case 1://队友0卡组
-                for (int i = 0; i < PlayerData.MateCardList0.Count; i++)
-                {
-                    CreatCard(PlayerData.MateCardList0[i]);
-                }
-                break;
-            case 2://队友1卡组
-                for (int i = 0; i < PlayerData.MateCardList1.Count; i++)
-                {
-                    CreatCard(PlayerData.MateCardList1[i]);
-                }
-                break;
-            case 3://队友2卡组
-                for (int i = 0; i < PlayerData.MateCardList2.Count; i++)
-                {
-                    CreatCard(PlayerData.MateCardList2[i]);
-                }
-                break;
-            case 4://队友3卡组
-                for (int i = 0; i < PlayerData.MateCardList3.Count; i++)
-                {
-                    CreatCard(PlayerData.MateCardList3[i]);
-                }
-                break;
+            CreateCard(PlayerData.PlayerCardList[i]);
         }
-        cardScrollRect.verticalNormalizedPosition = 1f;//滚动条到顶部
+        // 4. 滚动条归位
+        ResetScrollPosition();
     }
 
-    //在指定容器内创建卡片
-    public void CreatCard(Card card)
+    /// <summary>
+    /// 显示连携（绑定到「连携」按钮）
+    /// </summary>
+    public void ShowCombos()
     {
-        //在指定容器上创建对象
+        // 1. 切换为连携布局
+        UpdateGridCellSize(comboCellSize);
+        // 2. 清空容器
+        ClearAllContentInLibrary();
+        // 3. 生成连携（需替换为你的连携列表逻辑）
+        for (int i = 0; i < PlayerData.ComboList.Count; i++)
+        {
+            CreateCombo(PlayerData.ComboList[i]);
+        }
+        // 4. 滚动条归位
+        ResetScrollPosition();
+    }
+
+    /// <summary>
+    /// 显示遗物（绑定到「遗物」按钮）
+    /// </summary>
+    public void ShowEquips()
+    {
+        // 1. 切换为遗物布局
+        UpdateGridCellSize(equipCellSize);
+        // 2. 清空容器
+        ClearAllContentInLibrary();
+        // 3. 生成遗物（需替换为你的遗物列表逻辑）
+        for (int i = 0; i < PlayerData.EquipList.Count; i++)
+        {
+            CreateEquip(PlayerData.EquipList[i]);
+        }
+        // 4. 滚动条归位
+        ResetScrollPosition();
+    }
+    #endregion
+
+    #region 内容创建方法
+    /// <summary>
+    /// 创建卡牌
+    /// </summary>
+    public void CreateCard(Card card)
+    {
         GameObject newCard = Instantiate(cardPrefab, libraryPanel);
-        //导入类card（后续会用CardDisplay的ShowCard将卡牌信息呈现）
         newCard.GetComponent<CardDisplay>().card = card;
+        // 确保UI适配Grid单元格大小
+        SetUIElementStretch(newCard);
     }
 
-    //清除libraryPanel的所有卡牌
-    public void ClearAllCardsInLibrary()
+    /// <summary>
+    /// 创建连携
+    /// </summary>
+    public void CreateCombo(int combo)
     {
-        // 遍历所有子物体
-        Transform[] allCardTransforms = libraryPanel.GetComponentsInChildren<Transform>();
-        foreach (Transform cardTransform in allCardTransforms)
-        {
-            // 排除libraryPanel自身（只删除子物体）
-            if (cardTransform != libraryPanel.transform)
-            {
-                // 销毁卡牌对象
-                Destroy(cardTransform.gameObject);
-            }
-        }
+        GameObject newCombo = Instantiate(comboPrefab, libraryPanel);
+        // 替换为你的连携显示逻辑
+        newCombo.GetComponent<ComboBar>().ComboType = combo;
+        // 确保UI适配Grid单元格大小
+        SetUIElementStretch(newCombo);
     }
 
-    //隐藏不可使用的按钮
-    public void HideButton()
+    /// <summary>
+    /// 创建遗物
+    /// </summary>
+    public void CreateEquip(int equip)
     {
-        //如果没有对应队友，则隐藏按钮
-        if (PlayerData.MateList.Count < 1)
+        //GameObject newEquip = Instantiate(equipPrefab, libraryPanel);
+        //// 替换为你的遗物显示逻辑
+        //newEquip.GetComponent<EquipmentDisplay>().equipment = equip;
+        //// 确保UI适配Grid单元格大小
+        //SetUIElementStretch(newEquip);
+    }
+    #endregion
+
+    #region 辅助方法
+    /// <summary>
+    /// 动态更新Grid单元格大小
+    /// </summary>
+    private void UpdateGridCellSize(Vector2 targetSize)
+    {
+        if (gridLayout != null)
         {
-            if (Button1 != null)
-                Button1.SetActive(false);
-        }
-        if (PlayerData.MateList.Count < 2)
-        {
-            if (Button2 != null)
-                Button2.SetActive(false);
-        }
-        if (PlayerData.MateList.Count < 3)
-        {
-            if (Button3 != null)
-                Button3.SetActive(false);
-        }
-        if (PlayerData.MateList.Count < 4)
-        {
-            if (Button4 != null)
-                Button4.SetActive(false);
+            gridLayout.cellSize = targetSize;
         }
     }
 
-    //退出按钮
+    /// <summary>
+    /// 清空容器内所有内容（优化版：更高效）
+    /// </summary>
+    public void ClearAllContentInLibrary()
+    {
+        // 倒序遍历删除，避免索引错乱
+        for (int i = libraryPanel.childCount - 1; i >= 0; i--)
+        {
+            Destroy(libraryPanel.GetChild(i).gameObject);
+        }
+    }
+
+    /// <summary>
+    /// 重置滚动条到顶部
+    /// </summary>
+    private void ResetScrollPosition()
+    {
+        if (cardScrollRect != null)
+        {
+            cardScrollRect.verticalNormalizedPosition = 1f;
+        }
+    }
+
+    /// <summary>
+    /// 设置UI元素拉伸，适配Grid单元格大小
+    /// </summary>
+    private void SetUIElementStretch(GameObject uiObj)
+    {
+        RectTransform rt = uiObj.GetComponent<RectTransform>();
+        if (rt != null)
+        {
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.anchoredPosition = Vector2.zero;
+            rt.sizeDelta = Vector2.zero;
+        }
+    }
+    #endregion
+
+    // 退出按钮
     public void Exit()
     {
         SceneChanger.Instance.GetMajorCity(6);
     }
-
-
 }
