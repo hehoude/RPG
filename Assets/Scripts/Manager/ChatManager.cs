@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using Unity.VisualScripting;
+using UnityEngine.SceneManagement; // 新增：引入场景管理命名空间
 
 [System.Serializable]
 public class DialogueEntry
@@ -23,10 +24,19 @@ public class ChatManager : MonoSingleton<ChatManager>
     public GameObject ChatWindow; // 对话框
     public Text Name; // 名字文本
     public Text Message; // 对话文本
-    public GameObject Player; //玩家对象
+    [Tooltip("优先使用手动绑定的Player对象，若未绑定则自动查找tag为Player的对象")]
+    private GameObject Player; //玩家对象
 
     private DialogueData currentDialogueData; // 当前加载的对话数据
     private int currentDialogueIndex = 0; // 当前对话索引
+    private bool isPlayerFound = false; // 标记是否已找到Player对象
+
+    //
+    protected override void Awake()
+    {
+        useDontDestroyOnLoad = false;
+        base.Awake();
+    }
 
     void Start()
     {
@@ -39,10 +49,31 @@ public class ChatManager : MonoSingleton<ChatManager>
         {
             Debug.LogWarning("请在Inspector面板绑定ChatWindow对象！");
         }
+
+        // 启动时先尝试查找Player
+        FindPlayerObject();
+    }
+
+    void OnEnable()
+    {
+        // 注册场景加载事件：场景切换完成后自动重置Player查找状态
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        // 注销事件，避免内存泄漏
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     void Update()
     {
+        // 如果还没找到Player，每帧尝试查找
+        if (!isPlayerFound)
+        {
+            FindPlayerObject();
+        }
+
         // 只有对话框显示时，才响应鼠标点击推进对话
         if (ChatWindow != null && ChatWindow.activeSelf)
         {
@@ -54,15 +85,61 @@ public class ChatManager : MonoSingleton<ChatManager>
     }
 
     /// <summary>
+    /// 场景加载完成时的回调函数
+    /// </summary>
+    /// <param name="scene">加载的场景</param>
+    /// <param name="mode">加载模式</param>
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 场景切换后重置Player查找状态，重新查找
+        ResetPlayerStatus();
+        //Debug.Log($"场景{scene.name}加载完成，已重置Player查找状态");
+    }
+
+    /// <summary>
+    /// 重置Player相关状态（场景切换时调用）
+    /// </summary>
+    public void ResetPlayerStatus()
+    {
+        Player = null; // 清空旧的Player引用
+        isPlayerFound = false; // 标记为未找到
+    }
+
+    // 由于Player不是单例，所以需要持续查找并绑定Player对象（tag为Player）
+    private void FindPlayerObject()
+    {
+        // 如果已经手动绑定了Player，直接标记为找到
+        if (Player != null)
+        {
+            isPlayerFound = true;
+            return;
+        }
+
+        // 查找场景中tag为Player的第一个对象
+        GameObject foundPlayer = GameObject.FindGameObjectWithTag("Player");
+        if (foundPlayer != null)
+        {
+            Player = foundPlayer;
+            isPlayerFound = true;
+            //Debug.Log("成功自动找到Player对象：" + foundPlayer.name);
+        }
+    }
+
+    /// <summary>
     /// 外部调用入口：根据对话序号启动对应对话
     /// </summary>
     /// <param name="chatId">对话文件序号（0=chat0.json，1=chat1.json...）</param>
     public void StartChat(int chatId)
     {
-        if (Player != null)
+        // 确保Player已找到后再暂停
+        if (isPlayerFound && Player != null)
         {
             //使用局部暂停方法暂停玩家动作
             Player.GetComponent<Player>().playerStop = true;
+        }
+        else
+        {
+            Debug.LogWarning("启动对话时未找到Player对象，无法暂停玩家动作！");
         }
 
         // 重置对话索引
@@ -152,8 +229,10 @@ public class ChatManager : MonoSingleton<ChatManager>
             ChatWindow.SetActive(false);
             currentDialogueIndex = 0;
             currentDialogueData = null; // 清空当前对话数据
-            //Debug.Log("对话结束，已自动关闭对话框");
-            if (Player != null)
+                                        //Debug.Log("对话结束，已自动关闭对话框");
+
+            // 确保Player已找到后再恢复
+            if (isPlayerFound && Player != null)
             {
                 Player.GetComponent<Player>().playerStop = false;//释放玩家动作
             }

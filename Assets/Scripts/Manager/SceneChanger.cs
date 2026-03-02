@@ -46,12 +46,12 @@ public class SceneChanger : MonoSingleton<SceneChanger>
             shopManager.UnloadSingleton();
             Debug.Log("商店管理器单例已卸载");
         }
-        var chatManager = ChatManager.FindInstance();
-        if (chatManager != null)
-        {
-            chatManager.UnloadSingleton();
-            Debug.Log("对话管理器单例已卸载");
-        }
+        //var chatManager = ChatManager.FindInstance();
+        //if (chatManager != null)
+        //{
+        //    chatManager.UnloadSingleton();
+        //    Debug.Log("对话管理器单例已卸载");
+        //}
 
     }
     //****************************临时场景打开方法********************************

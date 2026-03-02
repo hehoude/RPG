@@ -18,10 +18,11 @@ public class CursorImage : MonoBehaviour
 
     void Start()
     {
-        // 隐藏系统默认鼠标
-        Cursor.visible = false;
+        // 核心修改1：解除鼠标锁定，让系统鼠标可以自由移出窗口且不消失
+        Cursor.lockState = CursorLockMode.None; // 不锁定鼠标位置
+        Cursor.visible = true; // 先让系统鼠标可见（后续根据逻辑切换）
 
-        // 核心优化：自动查找主相机（优先级：手动指定 > Tag=MainCamera > 第一个正交相机）
+        // 核心优化：自动查找主相机
         AutoFindMainCamera();
 
         // 初始化鼠标图片为默认样式
@@ -39,30 +40,61 @@ public class CursorImage : MonoBehaviour
 
     void Update()
     {
-        // 保留原有逻辑：鼠标跟随+点击交互
+        // 保留原有逻辑：UI鼠标跟随
         transform.position = Input.mousePosition;
+        // 保留原有逻辑：鼠标点击交互
         HandleMouseClick();
 
-        // 新增逻辑：检测鼠标是否悬浮在敌人上（加相机判空，避免空引用）
-        if (mainCamera != null)
+        // 检测鼠标是否在游戏窗口内
+        bool isMouseInGameWindow = IsMouseInWindow();
+
+        // 核心修改2：根据鼠标是否在窗口内，切换系统鼠标/UI鼠标的显示
+        if (isMouseInGameWindow)
         {
-            CheckMouseOverEnemyByTag();
-            SwitchCursorSprite();
+            // 鼠标在游戏窗口内：隐藏系统鼠标，显示自定义UI鼠标
+            Cursor.visible = false;
+            cursorImage.enabled = true;
+
+            // 检测敌人并切换UI鼠标图片
+            if (mainCamera != null)
+            {
+                CheckMouseOverEnemyByTag();
+                SwitchCursorSprite();
+            }
+        }
+        else
+        {
+            // 鼠标移出游戏窗口：显示系统原生鼠标，隐藏自定义UI鼠标
+            Cursor.visible = true;
+            cursorImage.enabled = false;
+            isOverEnemy = false; // 重置状态
         }
     }
 
     /// <summary>
-    /// 新增：自动查找2D场景的主相机
+    /// 判断鼠标是否在游戏窗口内
+    /// </summary>
+    /// <returns>是否在窗口内</returns>
+    private bool IsMouseInWindow()
+    {
+        Vector2 mousePos = Input.mousePosition;
+        // 检查鼠标坐标是否在游戏窗口的可视范围内
+        return mousePos.x >= 0 && mousePos.x <= Screen.width
+            && mousePos.y >= 0 && mousePos.y <= Screen.height;
+    }
+
+    /// <summary>
+    /// 自动查找2D场景的主相机
     /// </summary>
     private void AutoFindMainCamera()
     {
-        // 1. 如果手动指定了相机，直接使用（保留手动赋值的灵活性）
+        // 1. 如果手动指定了相机，直接使用
         if (mainCamera != null)
         {
             return;
         }
 
-        // 2. 查找Tag为"MainCamera"的相机（Unity默认主相机的Tag）
+        // 2. 查找Tag为"MainCamera"的相机
         Camera tagCamera = Camera.main;
         if (tagCamera != null)
         {
@@ -70,29 +102,30 @@ public class CursorImage : MonoBehaviour
             return;
         }
 
-        // 3. 如果没找到MainCamera，查找场景中第一个正交相机（2D场景常用）
+        // 3. 查找场景中第一个正交相机
         Camera[] allCameras = FindObjectsOfType<Camera>();
         foreach (Camera cam in allCameras)
         {
-            if (cam.orthographic) // 正交相机是2D场景的特征
+            if (cam.orthographic)
             {
                 mainCamera = cam;
                 return;
             }
         }
 
-        // 4. 最后尝试找任意相机（兜底）
+        // 4. 最后尝试找任意相机
         if (allCameras.Length > 0)
         {
             mainCamera = allCameras[0];
         }
     }
 
-    /// <summary>
-    /// 保留原有：处理鼠标点击的颜色和缩放逻辑
-    /// </summary>
+    //鼠标点击时变色
     private void HandleMouseClick()
     {
+        // 只有鼠标在窗口内时，才响应点击
+        if (!IsMouseInWindow()) return;
+
         if (Input.GetMouseButtonDown(0))
         {
             cursorImage.color = Color.red;
@@ -106,22 +139,38 @@ public class CursorImage : MonoBehaviour
     }
 
     /// <summary>
-    /// 保留：通过标签检测敌人
+    /// 通过标签检测敌人
     /// </summary>
     private void CheckMouseOverEnemyByTag()
     {
-        // 将屏幕鼠标坐标转换为2D世界坐标
-        Vector2 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        if (mainCamera == null)
+        {
+            isOverEnemy = false;
+            return;
+        }
 
-        // 发射2D射线检测
-        RaycastHit2D hit = Physics2D.Raycast(worldMousePos, Vector2.zero, 0f);
+        // 1. 转换坐标（加Z轴修正）
+        Vector3 screenPos = Input.mousePosition;
+        screenPos.z = mainCamera.nearClipPlane + 1f;
+        Vector2 worldMousePos = mainCamera.ScreenToWorldPoint(screenPos);
 
-        // 判断标签
-        isOverEnemy = (hit.collider != null && hit.collider.CompareTag(enemyTagName));
+        // 2. 使用OverlapPoint检测
+        Collider2D[] hitColliders = Physics2D.OverlapPointAll(worldMousePos);
+
+        // 3. 遍历所有碰撞体，判断是否有Enemy标签
+        isOverEnemy = false;
+        foreach (Collider2D coll in hitColliders)
+        {
+            if (coll.CompareTag(enemyTagName))
+            {
+                isOverEnemy = true;
+                break;
+            }
+        }
     }
 
     /// <summary>
-    /// 保留：切换鼠标图片
+    /// 切换鼠标图片
     /// </summary>
     private void SwitchCursorSprite()
     {
@@ -141,9 +190,10 @@ public class CursorImage : MonoBehaviour
         }
     }
 
-    // 可选：退出时恢复系统鼠标
+    // 退出时恢复系统鼠标
     private void OnDestroy()
     {
+        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 }

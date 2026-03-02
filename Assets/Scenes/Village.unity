@@ -18065,7 +18065,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enterPlace:
   - {fileID: 662538059}
-  Player: {fileID: 0}
+  Player: {fileID: 494757187}
 --- !u!4 &670624932
 Transform:
   m_ObjectHideFlags: 0
@@ -18463,6 +18463,10 @@ PrefabInstance:
     - target: {fileID: 8187583027530441267, guid: 46854a944100fa04c85c1326c8c01345, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 8187583027530441267, guid: 46854a944100fa04c85c1326c8c01345, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

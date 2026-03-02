@@ -24,7 +24,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Shop.unity
     guid: 92f8883ff51772a419f8de921818901d
   - enabled: 1
-    path: Assets/Scenes/CardBag.unity
+    path: Assets/Scenes/Bag.unity
     guid: a70316c8239dc4c44b229afc3453f63e
   - enabled: 1
     path: Assets/Scenes/Choose.unity
