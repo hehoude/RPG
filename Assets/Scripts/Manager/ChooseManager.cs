@@ -40,6 +40,7 @@ public class ChooseManager : MonoBehaviour
 
     void Awake()
     {
+        //Debug.Log("进入选择场景");
         PlayerData = PlayerData.Instance;
         CardStore = CardStore.Instance;
         Global_PlayerData = Global_PlayerData.Instance;
@@ -185,15 +186,15 @@ public class ChooseManager : MonoBehaviour
     {
         //保存数据
         PlayerData.SavePlayerData();
-        //通知地图管理器删除选择
-        if (MapManager.Instance != null)
+        //判断当前游戏模式
+        if (Global_PlayerData.Instance.model == 0)
         {
-            //如果是主城就不删了，游戏地图上才删除
+            //删除当前对象
             MapManager.Instance.DeleteCurrentObject(5);//5代表选择
             //推进游戏进程（这里已经包含了保存数据）
             MapManager.Instance.ProgressGame();
         }
-        //返回主城
+        //返回
         Exit();
     }
 

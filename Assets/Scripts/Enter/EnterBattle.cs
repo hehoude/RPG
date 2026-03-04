@@ -36,7 +36,8 @@ public class EnterBattle : MonoBehaviour
             //Debug.Log("OnTriggerEnter2D Fired!");
             //使用敌人编号集合改写战斗信息文件
             SavePlayerData();
-            if (MapManager.Instance != null)
+            //判断当前游戏模式
+            if (Global_PlayerData.Instance.model == 0)
             {
                 //传递地图管理器（单例）当前交互的对象
                 MapManager.Instance.CurrentObject = this.gameObject;

@@ -48,9 +48,15 @@ public class ChatManager : MonoSingleton<ChatManager>
     public Text BtnText1;
     public Text BtnText2;
     public Text BtnText3;
-    public Button Btn1;
-    public Button Btn2;
-    public Button Btn3;
+    private Button Btn1;
+    private Button Btn2;
+    private Button Btn3;
+
+    //当前对象（后续删除对象或操作其参数用）
+    public GameObject CurrnetTarget;
+
+    //当前地图管理器（每个管理器Start方法时，将自身传入这个参数中）
+    public WarMap_Manager CurrentMapManager;
 
     //
     protected override void Awake()
@@ -106,11 +112,7 @@ public class ChatManager : MonoSingleton<ChatManager>
         }
     }
 
-    /// <summary>
-    /// 场景加载完成时的回调函数
-    /// </summary>
-    /// <param name="scene">加载的场景</param>
-    /// <param name="mode">加载模式</param>
+    // 场景加载完成时的回调函数
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // 场景切换后重置Player查找状态，重新查找
@@ -118,9 +120,7 @@ public class ChatManager : MonoSingleton<ChatManager>
         //Debug.Log($"场景{scene.name}加载完成，已重置Player查找状态");
     }
 
-    /// <summary>
-    /// 重置Player相关状态（场景切换时调用）
-    /// </summary>
+    // 重置Player相关状态（场景切换时调用）
     public void ResetPlayerStatus()
     {
         Player = null; // 清空旧的Player引用
@@ -169,6 +169,14 @@ public class ChatManager : MonoSingleton<ChatManager>
         Button2.SetActive(false);
         Button3.SetActive(false);
 
+        //检查是否要触发战斗
+        if (999 == chatId)
+        {
+            //找到场景切换器，切换至战斗场景（战斗信息由NPC负责传入）
+            SceneChanger.Instance.GetBattle();
+            return;
+        }
+
         // 重置对话索引
         currentDialogueIndex = 0;
 
@@ -194,11 +202,14 @@ public class ChatManager : MonoSingleton<ChatManager>
         }
     }
 
-    /// <summary>
-    /// 动态加载指定序号的JSON对话文件
-    /// </summary>
-    /// <param name="chatId">对话文件序号</param>
-    /// <returns>是否加载成功</returns>
+    //传入自身的对话方法
+    public void StartChat(int chatId, int endAction, GameObject _Object)
+    {
+        CurrnetTarget = _Object;
+        StartChat(chatId, endAction);
+    }
+
+    //加载指定序号的JSON对话文件
     private bool LoadDialogueFromJson(int chatId)
     {
         // 拼接完整文件路径（Assets/Chats/chatX.json）
@@ -341,5 +352,29 @@ public class ChatManager : MonoSingleton<ChatManager>
         Btn3.onClick.AddListener(() => JumpChat(2));
     }
     
+    //战斗结束
+    public void BattleOver(bool result)
+    {
+        if (result)
+        {
+            if (CurrnetTarget != null)
+            {
+                //删除敌人
+                Destroy(CurrnetTarget);
+                //通知地图管理器更新资源表
+                CurrentMapManager.CheckMapSource();
+            }
+            else
+            {
+                Debug.LogWarning("找不到当前敌人，故战斗结束后无法删除");
+            }
+        }
+        //释放玩家动作
+        if (Player != null)
+        {
+            //使用局部暂停方法暂停玩家动作
+            Player.GetComponent<Player>().playerStop = false;
+        }
+    }
 
 }

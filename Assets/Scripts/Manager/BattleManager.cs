@@ -831,22 +831,36 @@ public class BattleManager : MonoSingleton<BattleManager>
             Global_PlayerData.coins += 20;
             //保存数据
             PlayerData.SavePlayerData();
-            
-            if (MapManager.Instance != null)
+
+            //判断当前游戏模式
+            if (Global_PlayerData.model == 0)//经典模式结算
             {
                 //通知地图管理器删除当前怪物
                 MapManager.Instance.DeleteCurrentObject(Global_PlayerData.CurrentId);
                 //验证房间是否清除，并执行后续流程
                 MapManager.Instance.RoomClean();
             }
-            else { Debug.Log("错误：没找到地图管理器"); }
-            //调用SceneChanger切回主城，并卸载自身场景
+            else if (Global_PlayerData.model == 1)//战役模式结算
+            {
+                ChatManager.Instance.BattleOver(true);//战斗胜利
+            }
+
+            //调用SceneChanger切回原场景，并卸载自身场景
             SceneChanger.Instance.GetMajorCity(2);
         }
         else if (!playerState.life)
         {
             Debug.Log("玩家已阵亡，失败！");
-            SceneChanger.Instance.BackManage();
+            //判断当前游戏模式
+            if (Global_PlayerData.model == 0)//经典模式结算
+            {
+                SceneChanger.Instance.BackManage();
+            }
+            else if (Global_PlayerData.model == 1)//战役模式结算
+            {
+                ChatManager.Instance.BattleOver(false);//战斗失败
+                SceneChanger.Instance.GetMajorCity(2);
+            }
         }
     }
 

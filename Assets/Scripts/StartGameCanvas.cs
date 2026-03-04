@@ -40,6 +40,7 @@ public class StartGameCanvas : MonoBehaviour
     //开启战役模式
     public void StartWar()
     {
+        ResetPlayerData_War();
         Global_PlayerData.Instance.model = 1;
         Global_PlayerData.Instance.Map = 9;//切换当前所处地图标志位
         SceneManager.LoadScene(9);//打开序号为9的场景
@@ -48,6 +49,7 @@ public class StartGameCanvas : MonoBehaviour
     //开启战役模式测试
     public void StartWarTest()
     {
+        ResetPlayerData_War();
         Global_PlayerData.Instance.model = 1;
         Global_PlayerData.Instance.Map = 10;//切换当前所处地图标志位
         SceneManager.LoadScene(10);//打开序号为10的场景

@@ -69,10 +69,10 @@ public class DeleteManager : MonoBehaviour
     {
         //保存数据
         PlayerData.SavePlayerData();
-        //通知地图管理器删除当前删卡
-        if (MapManager.Instance != null)
+        //判断当前游戏模式
+        if (Global_PlayerData.Instance.model == 0)
         {
-            //如果是主城就不删了，游戏地图上才删除
+            //通知地图管理器删除自身
             MapManager.Instance.DeleteCurrentObject(2);//2代表删卡
         }
         //返回主城
