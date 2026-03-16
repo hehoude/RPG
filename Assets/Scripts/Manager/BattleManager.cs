@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ public class BattleManager : MonoSingleton<BattleManager>
     public Text ConText;//消耗牌堆数量
     public GameObject player;//玩家游戏对象（实体）
     private PlayerState playerState;//玩家状态类
+    public GameObject Teammate;//队友游戏对象（实体）
+    private TeammateState TeammateState;//队友状态类
     public GameObject enemyPrefab;//敌人游戏对象（预制体）
     public GameObject[] enemyBlocks;//敌人区域
     public GameObject ChooseCardBlock;//选牌显示窗
@@ -93,6 +96,8 @@ public class BattleManager : MonoSingleton<BattleManager>
         EnemyData = EnemyManager.GetComponent<EnemyData>();
         battleReader = BattleReader.GetComponent<BattleReader>();
         playerState = player.GetComponent<PlayerState>();
+        TeammateState = Teammate.GetComponent<TeammateState>();
+        TeammateState.playerState = playerState;
         cardEffect = gameObject.GetComponent<CardEffect>();
     }
 
@@ -169,6 +174,8 @@ public class BattleManager : MonoSingleton<BattleManager>
         //初始化可用敌人指示容器
         activeEnemies = new List<GameObject>();
         RefreshEnemyList();//刷新容器状态
+        //创建队友
+        CreateMate();
         //读取卡组
         ReadDeck();
         //卡组洗牌
@@ -192,23 +199,23 @@ public class BattleManager : MonoSingleton<BattleManager>
         {
             AddDeck(card);
         }
-        //将队友卡组插入玩家卡组中
-        var allMateCardLists = new[]
-        {
-            PlayerData.MateCardList0,
-            PlayerData.MateCardList1,
-            PlayerData.MateCardList2,
-            PlayerData.MateCardList3
-        };
-        int mateCount = PlayerData.MateList.Count;
-        for (int i = 0; i < mateCount && i < allMateCardLists.Length; i++)
-        {
-            // 遍历当前索引的队友卡组，逐个加入玩家卡组
-            foreach (var card in allMateCardLists[i])
-            {
-                AddDeck(card);
-            }
-        }
+        ////将队友卡组插入玩家卡组中
+        //var allMateCardLists = new[]
+        //{
+        //    PlayerData.MateCardList0,
+        //    PlayerData.MateCardList1,
+        //    PlayerData.MateCardList2,
+        //    PlayerData.MateCardList3
+        //};
+        //int mateCount = PlayerData.MateList.Count;
+        //for (int i = 0; i < mateCount && i < allMateCardLists.Length; i++)
+        //{
+        //    // 遍历当前索引的队友卡组，逐个加入玩家卡组
+        //    foreach (var card in allMateCardLists[i])
+        //    {
+        //        AddDeck(card);
+        //    }
+        //}
     }
 
     //在抽牌堆中加入卡牌（仅限加载初始数据时使用）
@@ -257,6 +264,18 @@ public class BattleManager : MonoSingleton<BattleManager>
             newEnemy.GetComponent<EnemyState>().enemyType = enemyType;
             //敌人对象与敌人卡槽关联（千万不要把预制体_enemy塞进去了）
             _blocks[i].GetComponent<Block>().obj = newEnemy;
+            //完毕后再将该敌人初始化（代替EnemyState的Start方法）
+            newEnemy.GetComponent<EnemyState>().EnemyStart();
+        }
+    }
+
+    //创建队友
+    public void CreateMate()
+    {
+        if (PlayerData.MateList.Count > 0)
+        {
+            TeammateState.id = PlayerData.MateList[0];//第一个队友出战
+            TeammateState.MateStart();//初始化队友
         }
     }
 
@@ -402,8 +421,11 @@ public class BattleManager : MonoSingleton<BattleManager>
         if (ChooseCardMode == false)//选牌模式时不可结束回合
         {
             float delayTime = 0.5f;
-            Fold();//弃牌阶段
-                   //燃烧结算
+            //弃牌阶段
+            Fold();
+            //队友行动（在弃牌阶段后是为了方便给玩家塞牌，燃烧结算前是为了给玩家挡燃烧伤害）
+            TeammateState.Action();
+            //燃烧结算
             if (playerState.fire > 0)
             {
                 playerState.FireAnim();//播放燃烧动画（玩家动画自动触发结算）
@@ -496,10 +518,10 @@ public class BattleManager : MonoSingleton<BattleManager>
             {
                 execute = true;//卡牌执行中
                 Card attackCard = _Card.GetComponent<CardDisplay>().card;//获取Card类
-                int RunCount = 1;
+                int _UseCount = 1;
                 if (attackCard.spend == 999)
                 {
-                    RunCount = energy;
+                    _UseCount = energy;
                     energy = 0;//费用X时直接清空能量
                 }
                 else
@@ -513,7 +535,7 @@ public class BattleManager : MonoSingleton<BattleManager>
                     //判断enemyBlocks里面有没有敌人
                     if (block.GetComponent<Block>().obj != null)
                     {
-                        for (int i = 0; i < RunCount; i++)
+                        for (int i = 0; i < _UseCount; i++)
                         {
                             Use_Card(_Card, block.GetComponent<Block>().obj);//发动卡牌效果
                         }
@@ -901,9 +923,9 @@ public class BattleManager : MonoSingleton<BattleManager>
     }
 
     //连携触发函数（后续可以考虑迁移到其它脚本）
-    public void TriggerRGBEffect(int id)
+    public void TriggerRGBEffect(int _id)
     {
-        switch (id)
+        switch (_id)
         {
             case 0://重甲兵
                 playerState.GetArmor(6);//获得6点格挡
@@ -928,5 +950,19 @@ public class BattleManager : MonoSingleton<BattleManager>
                 
     }
 
+    //队友攻击函数（默认攻击最前方的敌人）
+    public void MateAttack(int _count, bool _all)
+    {
+        //优先找最前方的敌人
+        foreach (var block in enemyBlocks)
+        {
+            //判断enemyBlocks里面有没有敌人
+            if (block.GetComponent<Block>().obj != null)
+            {
+                block.GetComponent<Block>().obj.GetComponent<EnemyState>().TakeDamage(_count);
+                if (!_all) { return; }//不是全体攻击直接结束
+            }
+        }
+    }
 
 }

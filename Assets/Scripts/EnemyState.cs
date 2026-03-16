@@ -34,12 +34,18 @@ public class EnemyState : BattleState, IPointerDownHandler
 
     void Start()
     {
+        //为防止次序导致问题，EnemyStart()由战斗管理器调用
+    }
+
+    public void EnemyStart()
+    {
         StartShow();
         Refresh();
         RefreshIntent();//初始化完再随机意图
         hpbar.value = 1;
         life = true;
     }
+
     void Update()
     {
         if (choose)

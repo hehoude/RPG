@@ -31,7 +31,7 @@ public class EnemyData : MonoBehaviour
                 int enemy_id = enemyID;
                 string enemy_name = rowArray[2];
                 int enemy_maxhp = int.Parse(rowArray[3]);
-                int enemy_hp = int.Parse(rowArray[3]);
+                int enemy_hp = enemy_maxhp;
                 int enemy_attack = int.Parse(rowArray[4]);
                 int enemy_defense = int.Parse(rowArray[5]);
                 int enemy_build = int.Parse(rowArray[6]);

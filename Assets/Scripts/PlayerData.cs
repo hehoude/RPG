@@ -18,10 +18,10 @@ public class PlayerData : MonoSingleton<PlayerData>
     //public int hp;//玩家生命
     //public int id;//角色id
     public List<int> MateList = new List<int>();//队友列表
-    public List<Card> MateCardList0 = new List<Card>();//队友0的卡组
-    public List<Card> MateCardList1 = new List<Card>();//队友1的卡组
-    public List<Card> MateCardList2 = new List<Card>();//队友2的卡组
-    public List<Card> MateCardList3 = new List<Card>();//队友3的卡组
+    //public List<Card> MateCardList0 = new List<Card>();//队友0的卡组
+    //public List<Card> MateCardList1 = new List<Card>();//队友1的卡组
+    //public List<Card> MateCardList2 = new List<Card>();//队友2的卡组
+    //public List<Card> MateCardList3 = new List<Card>();//队友3的卡组
     public List<int> ComboList = new List<int>();//连携列表
     public List<int> EquipList = new List<int>();//遗物列表
 
@@ -44,7 +44,7 @@ public class PlayerData : MonoSingleton<PlayerData>
 
         //核心数据加载提前（确保不被MapManager抢先加载）
         CardStore.LoadCardData();//调用商店脚本加载所有卡牌数据
-        CardStore.LoadMateList();//加载队友卡牌数据
+        //CardStore.LoadMateList();//加载队友卡牌数据
         LoadPlayerData();//加载玩家数据
     }
     void Start()
@@ -141,31 +141,31 @@ public class PlayerData : MonoSingleton<PlayerData>
         Debug.Log("数据加载完成，坐标为x:" + _x + ",y:" + _y);
     }
 
-    //加载玩家与队友的卡组
+    //加载玩家卡组
     public void LoadCardData()
     {
         string fullPath = Application.dataPath + "/Datas/" + LoadSet +"/PlayerCard.csv";//读取路径
         LoadCardList(fullPath, PlayerCardList);//加载玩家卡组
-        if (MateList.Count > 0)
-        {
-            fullPath = Application.dataPath + "/Datas/" + LoadSet +"/MateCard0.csv";
-            LoadCardList(fullPath, MateCardList0);
-        }
-        if (MateList.Count > 1)
-        {
-            fullPath = Application.dataPath + "/Datas/" + LoadSet +"/MateCard1.csv";
-            LoadCardList(fullPath, MateCardList1);
-        }
-        if (MateList.Count > 2)
-        {
-            fullPath = Application.dataPath + "/Datas/" + LoadSet +"/MateCard2.csv";
-            LoadCardList(fullPath, MateCardList2);
-        }
-        if (MateList.Count > 3)
-        {
-            fullPath = Application.dataPath + "/Datas/" + LoadSet +"/MateCard3.csv";
-            LoadCardList(fullPath, MateCardList3);
-        }
+        //if (MateList.Count > 0)
+        //{
+        //    fullPath = Application.dataPath + "/Datas/" + LoadSet +"/MateCard0.csv";
+        //    LoadCardList(fullPath, MateCardList0);
+        //}
+        //if (MateList.Count > 1)
+        //{
+        //    fullPath = Application.dataPath + "/Datas/" + LoadSet +"/MateCard1.csv";
+        //    LoadCardList(fullPath, MateCardList1);
+        //}
+        //if (MateList.Count > 2)
+        //{
+        //    fullPath = Application.dataPath + "/Datas/" + LoadSet +"/MateCard2.csv";
+        //    LoadCardList(fullPath, MateCardList2);
+        //}
+        //if (MateList.Count > 3)
+        //{
+        //    fullPath = Application.dataPath + "/Datas/" + LoadSet +"/MateCard3.csv";
+        //    LoadCardList(fullPath, MateCardList3);
+        //}
         //最多支持4名队友
     }
 
@@ -260,26 +260,26 @@ public class PlayerData : MonoSingleton<PlayerData>
     {
         string path = Application.dataPath + "/Datas/" + LoadSet +"/PlayerCard.csv";
         SaveCardList(path, PlayerCardList);
-        if (MateList.Count > 0)
-        {
-            path = Application.dataPath + "/Datas/" + LoadSet +"/MateCard0.csv";
-            SaveCardList(path, MateCardList0);
-        }
-        if (MateList.Count > 1)
-        {
-            path = Application.dataPath + "/Datas/" + LoadSet +"/MateCard1.csv";
-            SaveCardList(path, MateCardList1);
-        }
-        if (MateList.Count > 2)
-        {
-            path = Application.dataPath + "/Datas/" + LoadSet +"/MateCard2.csv";
-            SaveCardList(path, MateCardList2);
-        }
-        if (MateList.Count > 3)
-        {
-            path = Application.dataPath + "/Datas/" + LoadSet +"/MateCard3.csv";
-            SaveCardList(path, MateCardList3);
-        }
+        //if (MateList.Count > 0)
+        //{
+        //    path = Application.dataPath + "/Datas/" + LoadSet +"/MateCard0.csv";
+        //    SaveCardList(path, MateCardList0);
+        //}
+        //if (MateList.Count > 1)
+        //{
+        //    path = Application.dataPath + "/Datas/" + LoadSet +"/MateCard1.csv";
+        //    SaveCardList(path, MateCardList1);
+        //}
+        //if (MateList.Count > 2)
+        //{
+        //    path = Application.dataPath + "/Datas/" + LoadSet +"/MateCard2.csv";
+        //    SaveCardList(path, MateCardList2);
+        //}
+        //if (MateList.Count > 3)
+        //{
+        //    path = Application.dataPath + "/Datas/" + LoadSet +"/MateCard3.csv";
+        //    SaveCardList(path, MateCardList3);
+        //}
     }
 
     //将指定容器的卡组保存到指定路径

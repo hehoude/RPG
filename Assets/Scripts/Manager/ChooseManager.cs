@@ -280,35 +280,35 @@ public class ChooseManager : MonoBehaviour
     //将CardStore的队友卡组加入到PlayerData中
     public void AddCardList(int _id)
     {
-        List<Card> MateCardList;
-        //根据队友数量判断要塞进哪张卡组里
-        if (PlayerData.MateList.Count == 1)
-        {
-            MateCardList = PlayerData.MateCardList0;
-        }
-        else if (PlayerData.MateList.Count == 2)
-        {
-            MateCardList = PlayerData.MateCardList1;
-        }
-        else if (PlayerData.MateList.Count == 3)
-        {
-            MateCardList = PlayerData.MateCardList2;
-        }
-        else if (PlayerData.MateList.Count == 4)
-        {
-            MateCardList = PlayerData.MateCardList3;
-        }
-        else
-        {
-            Debug.LogWarning("队友卡组配置错误!");
-            return;
-        }
-        //根据id在CardStore中获取相应卡组
-        foreach (int card_id in CardStore.MateLists[_id])
-        {
-            //根据ID复制Card实例，加入到卡组中
-            MateCardList.Add(CardStore.CopyCard(card_id));
-        }
+        //List<Card> MateCardList;
+        ////根据队友数量判断要塞进哪张卡组里
+        //if (PlayerData.MateList.Count == 1)
+        //{
+        //    MateCardList = PlayerData.MateCardList0;
+        //}
+        //else if (PlayerData.MateList.Count == 2)
+        //{
+        //    MateCardList = PlayerData.MateCardList1;
+        //}
+        //else if (PlayerData.MateList.Count == 3)
+        //{
+        //    MateCardList = PlayerData.MateCardList2;
+        //}
+        //else if (PlayerData.MateList.Count == 4)
+        //{
+        //    MateCardList = PlayerData.MateCardList3;
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("队友卡组配置错误!");
+        //    return;
+        //}
+        ////根据id在CardStore中获取相应卡组
+        //foreach (int card_id in CardStore.MateLists[_id])
+        //{
+        //    //根据ID复制Card实例，加入到卡组中
+        //    MateCardList.Add(CardStore.CopyCard(card_id));
+        //}
     }
 
     //创建连携条

@@ -99,48 +99,48 @@ public class CardStore : MonoSingleton<CardStore>
     //加载队友卡组数据表
     public void LoadMateList()
     {
-        //初始化容器（之所以没有放到Awake，因为这个函数会在PlayerData的Awake中调用，可能出现次序问题）
-        MateLists = new List<List<int>>();
-        string[] datarow = mateData.text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        foreach (var row in datarow)//遍历元素
-        {
-            string[] rowArray = row.Split(',');//再创建字符串数组，指定逗号为分隔符
-            if (rowArray[0] == "#")//第一个为#忽略
-            {
-                continue;
-            }
-            else if (string.IsNullOrEmpty(rowArray[0]))
-            {
-                break; // 终止循环，不再继续读取后续行
-            }
-            else if (rowArray[0] == "teammate")
-            {
-                if (rowArray.Length < 3)
-                {
-                    Debug.LogWarning($"行数据不完整，跳过此行：{row}");
-                    continue;
-                }
+        ////初始化容器（之所以没有放到Awake，因为这个函数会在PlayerData的Awake中调用，可能出现次序问题）
+        //MateLists = new List<List<int>>();
+        //string[] datarow = mateData.text.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        //foreach (var row in datarow)//遍历元素
+        //{
+        //    string[] rowArray = row.Split(',');//再创建字符串数组，指定逗号为分隔符
+        //    if (rowArray[0] == "#")//第一个为#忽略
+        //    {
+        //        continue;
+        //    }
+        //    else if (string.IsNullOrEmpty(rowArray[0]))
+        //    {
+        //        break; // 终止循环，不再继续读取后续行
+        //    }
+        //    else if (rowArray[0] == "teammate")
+        //    {
+        //        if (rowArray.Length < 3)
+        //        {
+        //            Debug.LogWarning($"行数据不完整，跳过此行：{row}");
+        //            continue;
+        //        }
 
-                try
-                {
-                    List<int> currentRowCards = new List<int>();
-                    for (int i = 2; i < rowArray.Length; i++)
-                    {
-                        if (string.IsNullOrWhiteSpace(rowArray[i]))
-                            continue;
-                        currentRowCards.Add(int.Parse(rowArray[i]));
-                    }
+        //        try
+        //        {
+        //            List<int> currentRowCards = new List<int>();
+        //            for (int i = 2; i < rowArray.Length; i++)
+        //            {
+        //                if (string.IsNullOrWhiteSpace(rowArray[i]))
+        //                    continue;
+        //                currentRowCards.Add(int.Parse(rowArray[i]));
+        //            }
 
-                    MateLists.Add(currentRowCards);
-                }
-                catch (FormatException ex)
-                {
-                    // 错误级别日志（红色）
-                    Debug.LogError($"行数据格式错误，跳过此行：{row}，错误：{ex.Message}");
-                }
-            }
-        }
-        Debug.Log("所有队友预加载完成");
+        //            MateLists.Add(currentRowCards);
+        //        }
+        //        catch (FormatException ex)
+        //        {
+        //            // 错误级别日志（红色）
+        //            Debug.LogError($"行数据格式错误，跳过此行：{row}，错误：{ex.Message}");
+        //        }
+        //    }
+        //}
+        //Debug.Log("所有队友预加载完成");
     }
 
     public void TestLoad()
