@@ -1,0 +1,22 @@
+{
+    "dialogues": [
+        {
+            "speakerName": "大师",
+            "message": "要选职业吗？"
+        },
+	{
+            "speakerName": "主角",
+            "message": "......"
+        }
+    ],
+   "jumps": [
+        {
+            "target": 995,
+            "btn": "选"
+        },
+        {
+            "target": 990,
+            "btn": "不选"
+        }
+    ]
+}
