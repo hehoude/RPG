@@ -18255,6 +18255,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 238503361171347647, guid: 49963c0fc8564174e9896c74689965de, type: 3}
+      propertyPath: chatId
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 476794720204387294, guid: 49963c0fc8564174e9896c74689965de, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.09
