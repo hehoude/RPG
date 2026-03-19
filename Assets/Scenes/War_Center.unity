@@ -4017,6 +4017,18 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 476794720204387294, guid: 49963c0fc8564174e9896c74689965de, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 476794720204387294, guid: 49963c0fc8564174e9896c74689965de, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 476794720204387294, guid: 49963c0fc8564174e9896c74689965de, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 476794720204387294, guid: 49963c0fc8564174e9896c74689965de, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.507185
       objectReference: {fileID: 0}
@@ -4056,9 +4068,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 476794720204387294, guid: 49963c0fc8564174e9896c74689965de, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1933293524645550655, guid: 49963c0fc8564174e9896c74689965de, type: 3}
       propertyPath: m_Name
       value: NPC
+      objectReference: {fileID: 0}
+    - target: {fileID: 2413081899781670209, guid: 49963c0fc8564174e9896c74689965de, type: 3}
+      propertyPath: m_Size.x
+      value: 1.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 2413081899781670209, guid: 49963c0fc8564174e9896c74689965de, type: 3}
+      propertyPath: m_Size.y
+      value: 1.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 2413081899781670209, guid: 49963c0fc8564174e9896c74689965de, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2d5d2da4ad03f2a488c08c08f97cb9ed, type: 3}
+    - target: {fileID: 2413081899781670209, guid: 49963c0fc8564174e9896c74689965de, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
