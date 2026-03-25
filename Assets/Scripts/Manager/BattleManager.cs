@@ -71,6 +71,7 @@ public class BattleManager : MonoSingleton<BattleManager>
     public int RunCount = 0;//回合计数器
     public GameObject TargetCard;//被选择的卡牌（作为目标）
     private bool ChooseCardMode;//选牌模式
+    private bool IsMate = false;//是否有队友出战
     // 自定义连携规则类（存储“目标组合”和“对应效果”）
     public class ComboRule
     {
@@ -276,6 +277,12 @@ public class BattleManager : MonoSingleton<BattleManager>
         {
             TeammateState.id = PlayerData.MateList[0];//第一个队友出战
             TeammateState.MateStart();//初始化队友
+            IsMate = true;//启用队友出战
+        }
+        else
+        {
+            //隐藏相关对象
+            Teammate.SetActive(false);
         }
     }
 
@@ -423,8 +430,12 @@ public class BattleManager : MonoSingleton<BattleManager>
             float delayTime = 0.5f;
             //弃牌阶段
             Fold();
-            //队友行动（在弃牌阶段后是为了方便给玩家塞牌，燃烧结算前是为了给玩家挡燃烧伤害）
-            TeammateState.Action();
+            //检测是否有队友
+            if (IsMate)
+            {
+                //队友行动（在弃牌阶段后是为了方便给玩家塞牌，燃烧结算前是为了给玩家挡燃烧伤害）
+                TeammateState.Action();
+            }
             //燃烧结算
             if (playerState.fire > 0)
             {
@@ -864,7 +875,7 @@ public class BattleManager : MonoSingleton<BattleManager>
             }
             else if (Global_PlayerData.model == 1)//战役模式结算
             {
-                ChatManager.Instance.BattleOver(true);//战斗胜利
+                ChatManager.Instance.SceneOver(true);//战斗胜利
             }
 
             //调用SceneChanger切回原场景，并卸载自身场景
@@ -880,7 +891,7 @@ public class BattleManager : MonoSingleton<BattleManager>
             }
             else if (Global_PlayerData.model == 1)//战役模式结算
             {
-                ChatManager.Instance.BattleOver(false);//战斗失败
+                ChatManager.Instance.SceneOver(false);//战斗失败
                 SceneChanger.Instance.GetMajorCity(2);
             }
         }

@@ -75,13 +75,21 @@ public class DeleteManager : MonoBehaviour
             //通知地图管理器删除自身
             MapManager.Instance.DeleteCurrentObject(2);//2代表删卡
         }
+        else if (Global_PlayerData.Instance.model == 1)//战役模式结算
+        {
+            ChatManager.Instance.SceneOver(true);//删除对象
+        }
         //返回主城
-        Exit();
+        SceneChanger.Instance.GetMajorCity(4);
     }
 
     //退出按钮
     public void Exit()
     {
+        if (Global_PlayerData.Instance.model == 1)
+        {
+            ChatManager.Instance.SceneOver(false);//不删除对象
+        }
         SceneChanger.Instance.GetMajorCity(4);
     }
 
