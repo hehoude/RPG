@@ -169,33 +169,11 @@ public class ChatManager : MonoSingleton<ChatManager>
         Button2.SetActive(false);
         Button3.SetActive(false);
 
-        //检查是否特殊功能
+        //检查是否要触发战斗
         if (999 == chatId)
         {
             //找到场景切换器，切换至战斗场景（战斗信息由NPC负责传入）
             SceneChanger.Instance.GetBattle();
-            //隐藏对话窗口
-            ChatWindow.SetActive(false);
-            return;
-        }
-        if (995 == chatId)
-        {
-            //找到场景切换器，切换至选择场景
-            SceneChanger.Instance.GetChoose();
-            //隐藏对话窗口
-            ChatWindow.SetActive(false);
-            return;
-        }
-        if (990 == chatId)
-        {
-            //释放玩家动作
-            if (Player != null)
-            {
-                //使用局部暂停方法暂停玩家动作
-                Player.GetComponent<Player>().playerStop = false;
-            }
-            //隐藏对话窗口
-            ChatWindow.SetActive(false);
             return;
         }
 
@@ -374,21 +352,21 @@ public class ChatManager : MonoSingleton<ChatManager>
         Btn3.onClick.AddListener(() => JumpChat(2));
     }
     
-    //交互结束（由子场景的管理器在关闭之前调用）
-    public void SceneOver(bool result)
+    //战斗结束
+    public void BattleOver(bool result)
     {
         if (result)
         {
             if (CurrnetTarget != null)
             {
-                //删除当前对象
+                //删除敌人
                 Destroy(CurrnetTarget);
                 //通知地图管理器更新资源表
                 CurrentMapManager.CheckMapSource();
             }
             else
             {
-                Debug.LogWarning("找不到当前对象，无法删除");
+                Debug.LogWarning("找不到当前敌人，故战斗结束后无法删除");
             }
         }
         //释放玩家动作
@@ -398,6 +376,5 @@ public class ChatManager : MonoSingleton<ChatManager>
             Player.GetComponent<Player>().playerStop = false;
         }
     }
-
 
 }
