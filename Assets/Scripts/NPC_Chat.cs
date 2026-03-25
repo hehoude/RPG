@@ -7,7 +7,7 @@ public class NPC_Chat : MonoBehaviour
 {
     [Header("提示箭头")]
     public GameObject Tip;
-    [Header("激活对话id（999代表立即战斗）")]
+    [Header("激活对话id（999战斗、995选职业、990关闭对话）")]
     public int chatId;
     [Header("是否可能战斗")]
     public bool battle;
@@ -79,7 +79,10 @@ public class NPC_Chat : MonoBehaviour
     private void OnDestroy()
     {
         isPlayerInTrigger = false;
-        Tip.SetActive(false);
+        if (Tip != null)
+        {
+            Tip.SetActive(false);
+        }
     }
 
     //传入战斗相关参数
