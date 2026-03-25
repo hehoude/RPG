@@ -44,10 +44,6 @@ public class EnterFire : MonoBehaviour
                 //传递地图管理器（单例）当前交互的对象
                 MapManager.Instance.CurrentObject = this.gameObject;
             }
-            else if (Global_PlayerData.Instance.model == 1)
-            {
-                ChatManager.Instance.CurrnetTarget = this.gameObject;
-            }
             //找到场景切换器，切换至火堆场景
             SceneChanger.Instance.GetFire();
 

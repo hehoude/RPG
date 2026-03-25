@@ -106,22 +106,14 @@ public class UpManager : MonoBehaviour
             //通知地图管理器删除自身
             MapManager.Instance.DeleteCurrentObject(1);//1代表火堆
         }
-        else if (Global_PlayerData.Instance.model == 1)//战役模式结算
-        {
-            ChatManager.Instance.SceneOver(true);//删除对象
-        }
         //返回主城
-        SceneChanger.Instance.GetMajorCity(3);//3代表火堆场景
+        Exit();
     }
 
-    //退出按钮并卸载自身场景
+    //退出按钮
     public void Exit()
     {
-        if (Global_PlayerData.Instance.model == 1)
-        {
-            ChatManager.Instance.SceneOver(false);//不删除对象
-        }
-        SceneChanger.Instance.GetMajorCity(3);//3代表火堆场景
+        SceneChanger.Instance.GetMajorCity(3);
     }
 
 

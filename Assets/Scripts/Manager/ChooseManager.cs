@@ -194,20 +194,13 @@ public class ChooseManager : MonoBehaviour
             //推进游戏进程（这里已经包含了保存数据）
             MapManager.Instance.ProgressGame();
         }
-        else if (Global_PlayerData.Instance.model == 1)//战役模式结算
-        {
-            ChatManager.Instance.SceneOver(true);//删除对象
-        }
-        SceneChanger.Instance.GetMajorCity(7);
+        //返回
+        Exit();
     }
 
     //退出按钮
     public void Exit()
     {
-        if (Global_PlayerData.Instance.model == 1)
-        {
-            ChatManager.Instance.SceneOver(false);//不删除对象
-        }
         SceneChanger.Instance.GetMajorCity(7);
     }
 

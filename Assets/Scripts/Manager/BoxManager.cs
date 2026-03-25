@@ -155,21 +155,13 @@ public class BoxManager : MonoSingleton<BoxManager>
             //如果是主城就不删了，游戏地图上才删除
             MapManager.Instance.DeleteCurrentObject(3);//3代表宝箱
         }
-        else if (Global_PlayerData.Instance.model == 1)//战役模式结算
-        {
-            ChatManager.Instance.SceneOver(true);//删除对象
-        }
         //返回主城
-        SceneChanger.Instance.GetMajorCity(8);//8代表宝箱场景
+        Exit();
     }
 
     //退出按钮
     public void Exit()
     {
-        if (Global_PlayerData.Instance.model == 1)
-        {
-            ChatManager.Instance.SceneOver(false);//不删除对象
-        }
         SceneChanger.Instance.GetMajorCity(8);
     }
 
