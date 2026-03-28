@@ -88,5 +88,11 @@
             "speakerName": "主角",
             "message": "你没再回头。"
         }
+    ],
+	"jumps": [
+        {
+            "target":995,
+            "btn": "选择职业"
+        }
     ]
 }

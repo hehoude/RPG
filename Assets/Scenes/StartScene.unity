@@ -14949,6 +14949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3efe5a93e60cbaa4cb2d000079a8dac7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useDontDestroyOnLoad: 1
   coins: 0
   maxhp: 0
   hp: 0
