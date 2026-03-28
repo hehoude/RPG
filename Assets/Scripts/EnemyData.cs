@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//==========================此脚本内容合并到BattleReader里面，暂时弃用==================
 public class EnemyData : MonoBehaviour
 {
     //使用TextAsset方法读取文本，将目标文本拖到插槽即可

@@ -5123,7 +5123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e9de8117bad8746954ac40d6bd1617, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyList: {fileID: 4900000, guid: 446498735c55c5946889a0c18113f5d2, type: 3}
+  enemyList: {fileID: 0}
 --- !u!1 &2016765182
 GameObject:
   m_ObjectHideFlags: 0
@@ -5440,6 +5440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08fe6808df9029c43b1a6a5429685b05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyList: {fileID: 4900000, guid: 446498735c55c5946889a0c18113f5d2, type: 3}
   enemies: 
 --- !u!4 &2038369062
 Transform:

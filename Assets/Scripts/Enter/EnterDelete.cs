@@ -46,7 +46,7 @@ public class EnterDelete : MonoBehaviour
             }
             else if (Global_PlayerData.Instance.model == 1)
             {
-                ChatManager.Instance.CurrnetTarget = this.gameObject;
+                ChatManager.Instance.CurrentTarget = this.gameObject;
             }
             //找到场景切换器，切换至删牌场景
             SceneChanger.Instance.GetDelete();

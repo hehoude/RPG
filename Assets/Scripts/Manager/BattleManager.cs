@@ -42,8 +42,8 @@ public class BattleManager : MonoSingleton<BattleManager>
     private CardStore CardStore;
     public GameObject BattleReader;//敌人ID读取器
     private BattleReader battleReader;
-    public GameObject EnemyManager;//从敌人管理器获取敌人数据
-    private EnemyData EnemyData;
+    //public GameObject EnemyManager;//从敌人管理器获取敌人数据（与BattleReader合并）
+    //private EnemyData EnemyData;
     public GridLayoutGroup HandGridLayout;//手牌布局管理器
     private Global_PlayerData Global_PlayerData;
     [Header("临时生成物")]
@@ -94,7 +94,7 @@ public class BattleManager : MonoSingleton<BattleManager>
         PlayerData = PlayerData.Instance;
         CardStore = CardStore.Instance;
         Global_PlayerData = Global_PlayerData.Instance;
-        EnemyData = EnemyManager.GetComponent<EnemyData>();
+        //EnemyData = EnemyManager.GetComponent<EnemyData>();
         battleReader = BattleReader.GetComponent<BattleReader>();
         playerState = player.GetComponent<PlayerState>();
         TeammateState = Teammate.GetComponent<TeammateState>();
@@ -255,10 +255,12 @@ public class BattleManager : MonoSingleton<BattleManager>
     //创建敌人
     public void CreateEnemy(GameObject _enemy, GameObject[] _blocks)
     {
+        //Debug.Log("敌人数量为："+ battleReader.enemies.Count);
         for (int i=0;i< battleReader.enemies.Count;i++)
         {
+            int _id = battleReader.enemies[i];
             //获取指定ID的敌人EnemyType实例
-            EnemyType enemyType = EnemyData.LoadEnemyMessage(battleReader.enemies[i]);
+            EnemyType enemyType = battleReader.LoadEnemyMessage(_id);
             //在卡槽中创建敌人游戏对象
             GameObject newEnemy = Instantiate(_enemy, _blocks[i].transform);
             //为游戏对象newEnemy赋予enemyType实例

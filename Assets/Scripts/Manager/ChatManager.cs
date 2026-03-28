@@ -53,7 +53,7 @@ public class ChatManager : MonoSingleton<ChatManager>
     private Button Btn3;
 
     //当前对象（后续删除对象或操作其参数用）
-    public GameObject CurrnetTarget;
+    public GameObject CurrentTarget;
 
     //当前地图管理器（每个管理器Start方法时，将自身传入这个参数中）
     public WarMap_Manager CurrentMapManager;
@@ -147,11 +147,8 @@ public class ChatManager : MonoSingleton<ChatManager>
         }
     }
 
-    /// <summary>
-    /// 外部调用入口：根据对话序号启动对应对话
-    /// </summary>
-    /// <param name="chatId">对话文件序号（0=chat0.json，1=chat1.json...）</param>
-    public void StartChat(int chatId, int endAction)
+    //外部调用入口：根据对话序号启动对应对话
+    public void StartChat(int chatId)
     {
         // 确保Player已找到后再暂停
         if (isPlayerFound && Player != null)
@@ -198,6 +195,12 @@ public class ChatManager : MonoSingleton<ChatManager>
             ChatWindow.SetActive(false);
             return;
         }
+        if (970<=chatId && 990>chatId)
+        {
+            //推进状态的特殊对话
+            SceneOver(chatId - 970);
+            return;
+        }
 
         // 重置对话索引
         currentDialogueIndex = 0;
@@ -212,8 +215,6 @@ public class ChatManager : MonoSingleton<ChatManager>
                 ChatWindow.SetActive(true);
                 //生成第一条对话
                 ShowCurrentDialogue();
-                //设置执行参数
-                chatActionType = endAction;
                 //解除对话锁
                 ChatLock = false;
             }
@@ -222,13 +223,6 @@ public class ChatManager : MonoSingleton<ChatManager>
         {
             Debug.LogError("启动对话失败，无法加载chat" + chatId + ".json");
         }
-    }
-
-    //传入自身的对话方法
-    public void StartChat(int chatId, int endAction, GameObject _Object)
-    {
-        CurrnetTarget = _Object;
-        StartChat(chatId, endAction);
     }
 
     //加载指定序号的JSON对话文件
@@ -269,9 +263,7 @@ public class ChatManager : MonoSingleton<ChatManager>
         }
     }
 
-    /// <summary>
-    /// 推进对话逻辑
-    /// </summary>
+    // 推进对话逻辑
     private void AdvanceDialogue()
     {
         // 检查对话数据和UI是否有效
@@ -316,9 +308,7 @@ public class ChatManager : MonoSingleton<ChatManager>
         }
     }
 
-    /// <summary>
-    /// 显示当前索引的对话内容
-    /// </summary>
+    // 显示当前索引的对话内容
     private void ShowCurrentDialogue()
     {
         if (currentDialogueData == null || currentDialogueIndex >= currentDialogueData.dialogues.Count)
@@ -360,7 +350,7 @@ public class ChatManager : MonoSingleton<ChatManager>
         currentDialogueData = null;
         //开启新的对话（目前默认为普通对话）
         Debug.Log("前往对话："+ _target);
-        StartChat(_target, 0);
+        StartChat(_target);
     }
 
     //获取按钮脚本并绑定
@@ -373,24 +363,54 @@ public class ChatManager : MonoSingleton<ChatManager>
         Btn2.onClick.AddListener(() => JumpChat(1));
         Btn3.onClick.AddListener(() => JumpChat(2));
     }
-    
-    //交互结束（由子场景的管理器在关闭之前调用）
+
+    //=====================================NPC状态更新函数=======================================
+    //当每次NPC事件结束后，都要调用这个函数更新NPC的状态
+
+    //由子场景事件完成后调用的函数（完成场景result = true，未完成场景result = false）
     public void SceneOver(bool result)
     {
         if (result)
         {
-            if (CurrnetTarget != null)
+            if (CurrentTarget != null)
             {
-                //删除当前对象
-                Destroy(CurrnetTarget);
-                //通知地图管理器更新资源表
-                CurrentMapManager.CheckMapSource();
+                //获取当前NPC脚本
+                NPC_Chat npc_chat = CurrentTarget.GetComponent<NPC_Chat>();
+                if (npc_chat != null)
+                {
+                    npc_chat.StatePush(0);//推进当前NPC状态，设置子状态为0
+                }
             }
             else
             {
-                Debug.LogWarning("找不到当前对象，无法删除");
+                Debug.LogWarning("找不到当前NPC对象，无法推进");
             }
         }
+        //如果当前窗口没有完成，则不推进NPC的状态
+        //释放玩家动作
+        if (Player != null)
+        {
+            //使用局部暂停方法暂停玩家动作
+            Player.GetComponent<Player>().playerStop = false;
+        }
+    }
+    //由对话完成调用的
+    public void SceneOver(int result)
+    {
+        if (CurrentTarget != null)
+        {
+            //获取当前NPC脚本
+            NPC_Chat npc_chat = CurrentTarget.GetComponent<NPC_Chat>();
+            if (npc_chat != null)
+            {
+                npc_chat.StatePush(result);//推进当前NPC状态，设置子状态为0
+            }
+        }
+        else
+        {
+            Debug.LogWarning("找不到当前NPC对象，无法推进");
+        }
+        //如果当前窗口没有完成，则不推进NPC的状态
         //释放玩家动作
         if (Player != null)
         {
@@ -399,5 +419,21 @@ public class ChatManager : MonoSingleton<ChatManager>
         }
     }
 
+    //由对话结束后触发的更新状态函数
+
+
+    //通知地图管理器更新资源表
+    public void RefreshMapSource()
+    {
+        CurrentMapManager.CheckMapSource();
+    }
+
+    //删除NPC（由NPC调用）
+    public void DeleteNPC(GameObject _npc)
+    {
+        Destroy(_npc);
+        //延时刷新地图资源
+        Invoke(nameof(RefreshMapSource), 0.1f);
+    }
 
 }

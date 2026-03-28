@@ -5,14 +5,30 @@ using System.IO;//文件读写
 
 public class NPC_Chat : MonoBehaviour
 {
+    //事件类
+    [System.Serializable]
+    public class StateSolve
+    {
+        public int main;
+        public int son;
+        public int function;
+        public int number;
+    }
+
     [Header("提示箭头")]
     public GameObject Tip;
-    [Header("激活对话id（999战斗、995选职业、990关闭对话）")]
-    public int chatId;
+    //[Header("激活对话id（999战斗、995选职业、990关闭对话）")]
+    //public int chatId;
+    [Header("状态事件集")]
+    public List<StateSolve> State_Event;
     [Header("是否可能战斗")]
     public bool battle;
     [Header("战斗中的敌人编号集")]
     public int[] enemies;
+    [Header("当前NPC的主状态字（初始为0）")]
+    public int main_state;
+    [Header("当前NPC的子状态字（初始为0）")]
+    public int son_state;
 
     private string LoadSet = "Save";//数据加载文件夹位置
 
@@ -67,9 +83,9 @@ public class NPC_Chat : MonoBehaviour
                 SavePlayerData();
             }
             //将自身传入ChatManager
-            ChatManager.Instance.CurrnetTarget = gameObject;
-            //对话管理器触发
-            ChatManager.Instance.StartChat(chatId, 0);
+            ChatManager.Instance.CurrentTarget = gameObject;
+            //执行当前NPC的效果
+            CheckCurrentState(true);
             //防止重复触发
             isPlayerInTrigger = false;
         }
@@ -116,6 +132,56 @@ public class NPC_Chat : MonoBehaviour
 
         // 写入 CSV
         File.WriteAllLines(filePath, datas);
-        //Debug.Log("敌人信息写入完成：" + filePath);
+        Debug.Log("敌人信息写入完成：" + filePath);
     }
+
+    //NPC更新状态
+    public void StatePush(int _son)
+    {
+        //推进主状态
+        main_state++;
+        //更新子状态
+        son_state = _son;
+        //查看当前状态是否有对应功能
+        CheckCurrentState(false);
+    }
+
+    //查看当前状态功能函数
+    public void CheckCurrentState(bool _do)
+    {
+        //寻找符合的事件
+        foreach (var state in State_Event)
+        {
+            // 匹配：主状态 == 当前主状态 && 子状态 == 当前子状态
+            if (state.main == main_state && state.son == son_state)
+            {
+                //是否真的执行此功能
+                if(_do)
+                {
+                    //执行函数
+                    DoCurrentState(state.function, state.number);
+                }
+                //找到就退出，不继续遍历
+                return;
+            }
+        }
+        //没找到相应功能，说明这个NPC没作用了，让ChatManager删除自身
+        ChatManager.Instance.DeleteNPC(gameObject);
+    }
+
+    //执行当前状态功能函数
+    public void DoCurrentState(int function, int num)
+    {
+        switch(function)
+        {
+            case 0://激活对话
+                //对话管理器触发
+                ChatManager.Instance.StartChat(num);
+                break;
+            default:
+                break;
+        }
+    }
+
+
 }
