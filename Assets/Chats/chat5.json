@@ -1,0 +1,18 @@
+{
+    "dialogues": [
+        {
+            "speakerName": "NPC",
+            "message": "我要换个样子"
+        },
+	{
+            "speakerName": "主角",
+            "message": "好的"
+        }
+    ],
+   "jumps": [
+        {
+            "target": 975,
+            "btn": "变"
+        }
+    ]
+}

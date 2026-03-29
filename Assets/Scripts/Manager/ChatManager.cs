@@ -198,6 +198,7 @@ public class ChatManager : MonoSingleton<ChatManager>
         if (970<=chatId && 990>chatId)
         {
             //推进状态的特殊对话
+            //Debug.Log("检测到推进状态的对话");
             SceneOver(chatId - 970);
             return;
         }
@@ -293,18 +294,8 @@ public class ChatManager : MonoSingleton<ChatManager>
                 showButton();
                 return;
             }
-            //清空内容
-            currentDialogueData = null;
-            //隐藏对话框
-            ChatWindow.SetActive(false);
-            
-
-            // 确保Player已找到后再恢复
-            if (isPlayerFound && Player != null)
-            {
-                Player.GetComponent<Player>().playerStop = false;//释放玩家动作
-            }
-
+            //结束对话窗
+            OverChat();
         }
     }
 
@@ -403,6 +394,7 @@ public class ChatManager : MonoSingleton<ChatManager>
             NPC_Chat npc_chat = CurrentTarget.GetComponent<NPC_Chat>();
             if (npc_chat != null)
             {
+                //Debug.Log("推进NPC的对话");
                 npc_chat.StatePush(result);//推进当前NPC状态，设置子状态为0
             }
         }
@@ -411,12 +403,8 @@ public class ChatManager : MonoSingleton<ChatManager>
             Debug.LogWarning("找不到当前NPC对象，无法推进");
         }
         //如果当前窗口没有完成，则不推进NPC的状态
-        //释放玩家动作
-        if (Player != null)
-        {
-            //使用局部暂停方法暂停玩家动作
-            Player.GetComponent<Player>().playerStop = false;
-        }
+        //结束对话窗
+        OverChat();
     }
 
     //由对话结束后触发的更新状态函数
@@ -434,6 +422,22 @@ public class ChatManager : MonoSingleton<ChatManager>
         Destroy(_npc);
         //延时刷新地图资源
         Invoke(nameof(RefreshMapSource), 0.1f);
+    }
+
+    //结束对话界面并释放玩家控制权
+    public void OverChat()
+    {
+        //清空内容
+        currentDialogueData = null;
+        //隐藏对话框
+        ChatWindow.SetActive(false);
+
+
+        // 确保Player已找到后再恢复
+        if (isPlayerFound && Player != null)
+        {
+            Player.GetComponent<Player>().playerStop = false;//释放玩家动作
+        }
     }
 
 }

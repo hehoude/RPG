@@ -29,6 +29,8 @@ public class NPC_Chat : MonoBehaviour
     public int main_state;
     [Header("当前NPC的子状态字（初始为0）")]
     public int son_state;
+    [Header("图片（需要更换图片才需要配置）")]
+    public Sprite targetSprite;
 
     private string LoadSet = "Save";//数据加载文件夹位置
 
@@ -142,8 +144,8 @@ public class NPC_Chat : MonoBehaviour
         main_state++;
         //更新子状态
         son_state = _son;
-        //查看当前状态是否有对应功能
-        CheckCurrentState(false);
+        CheckCurrentState(false);//查看当前状态是否有对应功能
+            
     }
 
     //查看当前状态功能函数
@@ -155,8 +157,8 @@ public class NPC_Chat : MonoBehaviour
             // 匹配：主状态 == 当前主状态 && 子状态 == 当前子状态
             if (state.main == main_state && state.son == son_state)
             {
-                //是否真的执行此功能
-                if(_do)
+                //是否真的执行此功能（功能10且以上的立即执行）
+                if(_do || state.function>=10)
                 {
                     //执行函数
                     DoCurrentState(state.function, state.number);
@@ -178,10 +180,31 @@ public class NPC_Chat : MonoBehaviour
                 //对话管理器触发
                 ChatManager.Instance.StartChat(num);
                 break;
+            case 10://更换图片
+                ChangeImage();
+                StatePush(num);//推进
+                break;
             default:
                 break;
         }
     }
 
+    //更换图片（既可以自身调用，也可以外部调用）
+    public void ChangeImage()
+    {
+        //获取当前对象的图片插槽
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr == null)
+        {
+            Debug.LogWarning("当前物体没有找到 SpriteRenderer！", gameObject);
+            return;
+        }
+        if (targetSprite == null)
+        {
+            Debug.LogWarning("未设置目标图片 targetSprite！", gameObject);
+            return;
+        }
+        sr.sprite = targetSprite;
+    }
 
 }
